@@ -4,6 +4,8 @@ import com.fitness.aiservice.model.Activity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 @Slf4j
@@ -15,7 +17,30 @@ public class ActivityAIService {
         String prompt = createPromptForActivity(activity);
         String aiResponse = geminiService.getAnswer(prompt);
         log.info("AI Response: {}", aiResponse);
+        processAiResponse(activity, aiResponse);
         return aiResponse;
+    }
+
+    private void processAiResponse(Activity activity, String aiResponse){
+        try{
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(aiResponse);
+            JsonNode textNode = rootNode.path("candidates")
+                    .get(0)
+                    .path("content")
+                    .path("parts")
+                    .get(0)
+                    .path("text");
+
+            String jsonContent = textNode.asText()
+                    .replaceAll("```json\\n","")
+                    .replaceAll("\n```","")
+                    .trim();
+
+            log.info("Parsed AI Response: {}", jsonContent);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private String createPromptForActivity(Activity activity) {
