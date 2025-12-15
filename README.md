@@ -54,6 +54,7 @@ Centralized configuration management for all microservices.
 - Supports dynamic configuration updates
 
 **Configuration Files:**
+- `api-gateway.yml`
 - `activity-service.yml`
 - `ai-service.yml`
 - `user-service.yml`
@@ -68,7 +69,26 @@ Service registry and discovery server.
 
 **Dashboard:** http://localhost:8761
 
-### 3. User Service
+### 3. API Gateway (Port: 8080)
+Single entry point for all client requests.
+
+**Responsibilities:**
+- Routes incoming requests to appropriate microservices
+- Load balancing across service instances
+- Centralized request handling
+- Service discovery integration via Eureka
+
+**Routing Configuration:**
+- `/api/users/**` → User Service
+- `/api/activities/**` → Activity Service
+- `/api/recommendations/**` → AI Service
+
+**Key Components:**
+- Spring Cloud Gateway (WebMVC)
+- Eureka client for service discovery
+- Config Server integration for dynamic routing
+
+### 4. User Service
 User management and authentication service.
 
 **Responsibilities:**
@@ -82,7 +102,7 @@ User management and authentication service.
 - RESTful APIs for user operations
 - User validation endpoints
 
-### 4. Activity Service
+### 5. Activity Service
 Fitness activity tracking and management.
 
 **Responsibilities:**
@@ -100,7 +120,7 @@ Fitness activity tracking and management.
 **Activity Types:**
 - Running, Walking, Cycling, Swimming, Gym, Yoga, etc.
 
-### 5. AI Service
+### 6. AI Service
 AI-powered fitness recommendations using Google Gemini.
 
 **Responsibilities:**
@@ -131,6 +151,8 @@ AI-powered fitness recommendations using Google Gemini.
 
 ## 📝 API Documentation
 
+All APIs are accessed through the API Gateway at `http://localhost:8080`.
+
 ### User Service
 - `POST /api/users/register` - Register new user
 - `GET /api/users/{id}` - Get user by ID
@@ -150,6 +172,7 @@ AI-powered fitness recommendations using Google Gemini.
 Each service is configured through Spring Cloud Config Server. Configuration files are located in:
 ```
 configserver/src/main/resources/config/
+├── api-gateway.yml
 ├── activity-service.yml
 ├── ai-service.yml
 └── user-service.yml
@@ -158,6 +181,7 @@ configserver/src/main/resources/config/
 ### Default Ports
 - Config Server: 8888
 - Eureka Server: 8761
+- API Gateway: 8080
 - User Service: (configured in config server)
 - Activity Service: (configured in config server)
 - AI Service: (configured in config server)
@@ -168,6 +192,7 @@ configserver/src/main/resources/config/
 fitness-microservice/
 ├── configserver/          # Configuration management
 ├── eureka/               # Service discovery
+├── gateway/              # API Gateway
 ├── userservice/          # User management
 ├── activityservice/      # Activity tracking
 └── aiservice/           # AI recommendations
