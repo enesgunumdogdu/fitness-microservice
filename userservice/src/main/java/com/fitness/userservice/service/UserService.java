@@ -12,12 +12,13 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class UserService {
+
     @Autowired
     private UserRepository repository;
 
-    public UserResponse register(@Valid RegisterRequest request) {
+    public UserResponse register(RegisterRequest request) {
 
-        if(repository.existsByEmail(request.getEmail())){
+        if (repository.existsByEmail(request.getEmail())) {
             User existingUser = repository.findByEmail(request.getEmail());
             UserResponse userResponse = new UserResponse();
             userResponse.setId(existingUser.getId());
@@ -34,6 +35,7 @@ public class UserService {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
+        user.setKeycloakId(request.getKeycloakId());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
 
@@ -53,7 +55,7 @@ public class UserService {
 
     public UserResponse getUserProfile(String userId) {
         User user = repository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
 
         UserResponse userResponse = new UserResponse();
         userResponse.setId(user.getId());
@@ -63,7 +65,7 @@ public class UserService {
         userResponse.setLastName(user.getLastName());
         userResponse.setCreatedAt(user.getCreatedAt());
         userResponse.setUpdatedAt(user.getUpdatedAt());
-        
+
         return userResponse;
     }
 
