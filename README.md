@@ -21,7 +21,8 @@ The system follows cloud‑native principles such as service discovery, centrali
 - **Spring Cloud Config** – Centralized Configuration
 - **Spring Security** – OAuth2 Resource Server, JWT
 - **Keycloak** – OAuth2 / OIDC Identity Provider
-- **MongoDB** – NoSQL Database
+- **PostgreSQL** – Relational Database (User Service)
+- **MongoDB** – NoSQL Database (Activity & AI Services)
 - **RabbitMQ** – Message Broker
 - **WebClient** – Reactive HTTP Client
 - **Google Gemini AI** – AI Recommendations
@@ -56,7 +57,8 @@ The system follows cloud‑native principles such as service discovery, centrali
 - **AI Service** – workout recommendations via Gemini AI
 
 ### Data & Messaging
-- **MongoDB** for persistence
+- **PostgreSQL** for user data persistence
+- **MongoDB** for activity and recommendation data
 - **RabbitMQ** for asynchronous, event‑driven communication
 
 ---
@@ -93,6 +95,8 @@ fitness-microservice/
 
 - **Java 21+**, Maven 3.8+
 - **Node.js 18+**, npm
+- **PostgreSQL** (5432)
+  - Database: `fitness_user_db`
 - **MongoDB** (27017)
 - **RabbitMQ** (5672)
 - **Keycloak** (8181)
@@ -105,13 +109,15 @@ fitness-microservice/
 ## 🚀 Getting Started
 
 ### 1. Start infrastructure services
+- PostgreSQL
 - MongoDB
 - RabbitMQ
 - Keycloak
 
-### 2. Configure Gemini API key
-```yaml
-aiservice/src/main/resources/application.yml
+### 2. Configure environment variables
+Set the following environment variables:
+```bash
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
 ### 3. Start backend services in order
