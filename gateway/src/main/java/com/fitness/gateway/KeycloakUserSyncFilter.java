@@ -38,7 +38,7 @@ public class KeycloakUserSyncFilter implements Filter {
             userId = registerRequest.getKeycloakId();
         }
 
-        if (userId != null && token != null) {
+        if (userId != null && token != null){
             String finalUserId = userId;
             
             try {
