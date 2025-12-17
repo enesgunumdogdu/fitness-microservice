@@ -1,228 +1,163 @@
 # Fitness Microservice
 
-A cloud-native fitness tracking application built with microservices architecture, featuring AI-powered workout recommendations using Google Gemini AI.
+Cloud‑native, microservices‑based fitness tracking platform with **AI‑powered workout recommendations** and **OAuth2 authentication**.
+
+---
+
+## 📋 Overview
+
+Fitness Microservice is a modern, scalable fitness tracking system built with **Spring Boot microservices** and a **React frontend**. It leverages **Google Gemini AI** for personalized workout recommendations and **Keycloak** for secure authentication.
+
+The system follows cloud‑native principles such as service discovery, centralized configuration, API gateway security, and event‑driven communication.
+
+---
+
+## 🚀 Tech Stack
+
+### Backend
+- **Java 21**, Spring Boot 4.0.0, Spring Cloud 2025.1.0
+- **Spring Cloud Gateway** – API Gateway
+- **Netflix Eureka** – Service Discovery
+- **Spring Cloud Config** – Centralized Configuration
+- **Spring Security** – OAuth2 Resource Server, JWT
+- **Keycloak** – OAuth2 / OIDC Identity Provider
+- **MongoDB** – NoSQL Database
+- **RabbitMQ** – Message Broker
+- **WebClient** – Reactive HTTP Client
+- **Google Gemini AI** – AI Recommendations
+
+### Frontend
+- **React 19** + **Vite 7.2** – Modern Build Tool
+- **Material‑UI 7.3** – UI Components
+- **Redux Toolkit 2.11** – State Management
+- **OAuth2 Authorization Code Flow with PKCE** – Secure Auth
+- **Axios** – HTTP Client
+- **React Router 7.10** – Client-side Routing
+
+---
 
 ## 🏗️ Architecture
 
-This application follows a microservices architecture pattern with the following components:
+### Presentation Layer
+- React Frontend
+- OAuth2 / JWT based authentication
 
+### Gateway & Security Layer
+- Spring Cloud Gateway
+- Keycloak integration
 
-### Service Communication
-- **Synchronous**: REST APIs with WebClient
-- **Asynchronous**: Event-driven communication via RabbitMQ
-- **Service Discovery**: Netflix Eureka for dynamic service registration and discovery
-- **Centralized Configuration**: Spring Cloud Config Server
+### Infrastructure Layer
+- Eureka Server (Service Discovery)
+- Config Server (Centralized Config)
 
-## 🚀 Technologies
-
-### Core Framework
-- **Java 21**: Modern Java LTS version
-- **Spring Boot 4.0.0**: Latest Spring Boot framework
-- **Spring Cloud 2025.1.0**: Cloud-native tooling
-- **Maven**: Dependency management and build automation
-
-### Spring Cloud Components
-- **Spring Cloud Config Server**: Centralized configuration management
-- **Netflix Eureka**: Service discovery and registration
-- **Spring Cloud Config Client**: Dynamic configuration loading
+### Business Services
+- **User Service** – user profiles and roles
+- **Activity Service** – fitness activity tracking
+- **AI Service** – workout recommendations via Gemini AI
 
 ### Data & Messaging
-- **MongoDB**: NoSQL database for flexible data storage
-- **RabbitMQ (AMQP)**: Message broker for asynchronous communication
-- **Spring Data MongoDB**: Database access layer
+- **MongoDB** for persistence
+- **RabbitMQ** for asynchronous, event‑driven communication
 
-### Communication
-- **Spring WebMVC**: RESTful API development
-- **Spring WebFlux**: Reactive programming with WebClient
-- **WebClient**: Non-blocking HTTP client for inter-service communication
-
-### AI Integration
-- **Google Gemini AI**: AI-powered workout recommendations and fitness insights
-
-### Development Tools
-- **Lombok**: Reduces boilerplate code
-- **Spring Boot DevTools**: Enhanced development experience
+---
 
 ## 📦 Microservices
 
-### 1. Config Server (Port: 8888)
-Centralized configuration management for all microservices.
+| Service          | Port | Description                          |
+|------------------|------|--------------------------------------|
+| Config Server    | 8888 | Centralized configuration management |
+| Eureka Server    | 8761 | Service discovery and monitoring     |
+| API Gateway      | 8080 | Secure entry point and routing       |
+| User Service     | 8081 | User management and roles            |
+| Activity Service | 8082 | Fitness activity tracking            |
+| AI Service       | 8083 | AI‑powered recommendations           |
 
-**Responsibilities:**
-- Manages application configurations for all services
-- Provides environment-specific configurations
-- Supports dynamic configuration updates
+---
 
-**Configuration Files:**
-- `api-gateway.yml`
-- `activity-service.yml`
-- `ai-service.yml`
-- `user-service.yml`
-
-### 2. Eureka Server (Port: 8761)
-Service registry and discovery server.
-
-**Responsibilities:**
-- Service registration and health monitoring
-- Service discovery for inter-service communication
-- Load balancing support
-
-**Dashboard:** http://localhost:8761
-
-### 3. API Gateway (Port: 8080)
-Single entry point for all client requests.
-
-**Responsibilities:**
-- Routes incoming requests to appropriate microservices
-- Load balancing across service instances
-- Centralized request handling
-- Service discovery integration via Eureka
-
-**Routing Configuration:**
-- `/api/users/**` → User Service
-- `/api/activities/**` → Activity Service
-- `/api/recommendations/**` → AI Service
-
-**Key Components:**
-- Spring Cloud Gateway (WebMVC)
-- Eureka client for service discovery
-- Config Server integration for dynamic routing
-
-### 4. User Service
-User management and authentication service.
-
-**Responsibilities:**
-- User registration and profile management
-- User authentication and authorization
-- User role management (UserRole enum)
-- Provides user validation for other services
-
-**Key Components:**
-- MongoDB for user data persistence
-- RESTful APIs for user operations
-- User validation endpoints
-
-### 5. Activity Service
-Fitness activity tracking and management.
-
-**Responsibilities:**
-- Records and manages fitness activities (running, cycling, gym, etc.)
-- Activity type management (ActivityType enum)
-- User validation before activity creation
-- Publishes activity events to RabbitMQ for AI processing
-
-**Key Components:**
-- MongoDB for activity data
-- RabbitMQ publisher for activity events
-- WebClient for user validation
-- Integration with User Service
-
-**Activity Types:**
-- Running, Walking, Cycling, Swimming, Gym, Yoga, etc.
-
-### 6. AI Service
-AI-powered fitness recommendations using Google Gemini.
-
-**Responsibilities:**
-- Consumes activity events from RabbitMQ
-- Generates personalized workout recommendations
-- Analyzes fitness patterns and provides insights
-- Stores recommendations in MongoDB
-
-**Key Components:**
-- Gemini AI integration for intelligent recommendations
-- RabbitMQ consumer (ActivityMessageListener)
-- MongoDB for recommendation storage
-- Activity analysis and pattern recognition
-
-**AI Features:**
-- Personalized workout suggestions
-- Fitness goal recommendations
-- Activity pattern analysis
-
-## 🛠️ Prerequisites
-
-- **Java 21** or higher
-- **Maven 3.8+**
-- **MongoDB** (running on default port 27017)
-- **RabbitMQ** (running on default port 5672)
-- **Google Gemini API Key** (for AI Service)
-
-
-## 📝 API Documentation
-
-All APIs are accessed through the API Gateway at `http://localhost:8080`.
-
-### User Service
-- `POST /api/users/register` - Register new user
-- `GET /api/users/{id}` - Get user by ID
-- `GET /api/users` - List all users
-
-### Activity Service
-- `POST /api/activities` - Create new activity
-- `GET /api/activities/{id}` - Get activity by ID
-- `GET /api/activities/user/{userId}` - Get user's activities
-
-### AI Service
-- `GET /api/recommendations/{userId}` - Get AI recommendations for user
-- `GET /api/recommendations` - Get all recommendations
-
-## 🔧 Configuration
-
-Each service is configured through Spring Cloud Config Server. Configuration files are located in:
-```
-configserver/src/main/resources/config/
-├── api-gateway.yml
-├── activity-service.yml
-├── ai-service.yml
-└── user-service.yml
-```
-
-### Default Ports
-- Config Server: 8888
-- Eureka Server: 8761
-- API Gateway: 8080
-- User Service: (configured in config server)
-- Activity Service: (configured in config server)
-- AI Service: (configured in config server)
-
-## 🏗️ Project Structure
+## 📁 Project Structure
 
 ```
 fitness-microservice/
-├── configserver/          # Configuration management
-├── eureka/               # Service discovery
-├── gateway/              # API Gateway
-├── userservice/          # User management
-├── activityservice/      # Activity tracking
-└── aiservice/           # AI recommendations
+├── frontend/          # React application
+├── configserver/      # Centralized configuration
+├── eureka/            # Service discovery
+├── gateway/           # API Gateway & security
+├── userservice/       # User management
+├── activityservice/   # Activity tracking
+└── aiservice/         # AI recommendations
 ```
 
-Each microservice follows a standard structure:
+---
+
+## 🛠️ Prerequisites
+
+- **Java 21+**, Maven 3.8+
+- **Node.js 18+**, npm
+- **MongoDB** (27017)
+- **RabbitMQ** (5672)
+- **Keycloak** (8181)
+  - Realm: `fitness-oauth2`
+  - Client: `oauth2-pkce-client`
+- **Google Gemini API Key**
+
+---
+
+## 🚀 Getting Started
+
+### 1. Start infrastructure services
+- MongoDB
+- RabbitMQ
+- Keycloak
+
+### 2. Configure Gemini API key
+```yaml
+aiservice/src/main/resources/application.yml
 ```
-service/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── com/fitness/{service}/
-│   │   │       ├── config/         # Configuration classes
-│   │   │       ├── controller/     # REST controllers
-│   │   │       ├── dto/           # Data transfer objects
-│   │   │       ├── model/         # Domain models
-│   │   │       ├── repository/    # Data access layer
-│   │   │       └── service/       # Business logic
-│   │   └── resources/
-│   │       └── application.yml
-│   └── test/
-└── pom.xml
+
+### 3. Start backend services in order
+- Config Server
+- Eureka Server
+- API Gateway
+- User, Activity and AI Services
+
+### 4. Start frontend
+```bash
+npm install
+npm run dev
 ```
 
+**Application URL:** http://localhost:5173
 
-## 📊 Monitoring
+---
 
-- **Eureka Dashboard**: http://localhost:8761 - View registered services and health status
-- **RabbitMQ Management**: http://localhost:15672 - Monitor message queues and exchanges
+## 🔐 Security
+
+- OAuth2 Authorization Code Flow with PKCE
+- JWT‑based authentication and authorization
+- Spring Security OAuth2 Resource Server
+- Automatic user synchronization with Keycloak
+
+---
+
+## 📊 Monitoring & Management
+
+- **Eureka Dashboard:** http://localhost:8761
+- **RabbitMQ Management UI:** http://localhost:15672
+- **Keycloak Admin Console:** http://localhost:8181
+
+---
+
+## ✨ Features
+
+- Secure authentication with OAuth2 / OIDC
+- Fitness activity tracking (running, cycling, gym, etc.)
+- AI‑powered personalized workout recommendations
+- Event‑driven microservices architecture
+- Centralized configuration and service discovery
+- Modern, responsive React UI
+
+---
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+MIT License
