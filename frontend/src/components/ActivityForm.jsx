@@ -1,9 +1,11 @@
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { addActivity } from '../services/api'
 
 
 const ActivityForm = ({ onActivityAdded }) => {
+    const userId = useSelector(state => state.auth.userId);
 
     const [activity, setActivity] = useState({
         type: "RUNNING", duration: '', caloriesBurned: '',
@@ -13,7 +15,15 @@ const ActivityForm = ({ onActivityAdded }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await addActivity(activity);
+            const activityData = {
+                userId: userId,
+                type: activity.type,
+                duration: parseInt(activity.duration),
+                caloriesBurned: parseInt(activity.caloriesBurned),
+                startTime: new Date().toISOString(),
+                additionalMetrics: activity.additionalMetrics
+            };
+            await addActivity(activityData);
             onActivityAdded();
             setActivity({ type: "RUNNING", duration: '', caloriesBurned: ''});
         } catch (error) {
