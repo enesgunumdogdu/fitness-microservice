@@ -1,5 +1,5 @@
 import { Box, Container, Typography, Button, AppBar, Toolbar, Avatar } from "@mui/material";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "react-oauth2-code-pkce";
 import ActivityForm from "../components/ActivityForm";
 import ActivityList from "../components/ActivityList";
@@ -8,6 +8,10 @@ const ActivitiesPage = () => {
   const { logOut, tokenData } = useContext(AuthContext);
   const username = tokenData?.preferred_username || tokenData?.name || "User";
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  useEffect(() => {
+    document.title = "My Activities - AEG Fitness";
+  }, []);
 
   const handleActivityAdded = () => {
     setRefreshTrigger(prev => prev + 1);
@@ -44,7 +48,7 @@ const ActivitiesPage = () => {
             component="div"
             sx={{ flexGrow: 1, fontWeight: 600, color: "white" }}
           >
-            Fitness Tracker
+            AEG Fitness
           </Typography>
           <Typography
             variant="body2"
