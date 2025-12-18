@@ -1,4 +1,4 @@
-import { Card, CardContent, Grid, Typography, Box, Chip, CircularProgress } from '@mui/material';
+import { Card, CardContent, Grid, Typography, Box, Chip, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { getActivities } from '../services/api';
@@ -18,18 +18,33 @@ const activityColors = {
 const ActivityList = () => {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sortNewestFirst, setSortNewestFirst] = useState(true);
   const navigate = useNavigate();
 
   const fetchActivities = async () => {
     try {
       setLoading(true);
       const response = await getActivities();
-      setActivities(response.data);
+      const sorted = sortActivities(response.data, sortNewestFirst);
+      setActivities(sorted);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const sortActivities = (data, newestFirst) => {
+    return [...data].sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return newestFirst ? dateB - dateA : dateA - dateB;
+    });
+  };
+
+  const toggleSort = () => {
+    setSortNewestFirst(!sortNewestFirst);
+    setActivities(prevActivities => sortActivities(prevActivities, !sortNewestFirst));
   };
 
   useEffect(() => {
@@ -77,16 +92,35 @@ const ActivityList = () => {
 
   return (
     <Box>
-      <Typography
-        variant="h5"
-        sx={{
-          mb: 3,
-          fontWeight: 600,
-          color: "white",
-        }}
-      >
-        Your Activities
-      </Typography>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3 }}>
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: 600,
+            color: "white",
+          }}
+        >
+          Your Activities
+        </Typography>
+        <Tooltip title={sortNewestFirst ? "Newest First" : "Oldest First"}>
+          <IconButton
+            onClick={toggleSort}
+            sx={{
+              background: "rgba(255, 255, 255, 0.2)",
+              color: "white",
+              backdropFilter: "blur(10px)",
+              "&:hover": {
+                background: "rgba(255, 255, 255, 0.3)",
+              },
+              transition: "all 0.3s ease-in-out",
+            }}
+          >
+            <Typography sx={{ fontSize: 24 }}>
+              {sortNewestFirst ? "⬇️" : "⬆️"}
+            </Typography>
+          </IconButton>
+        </Tooltip>
+      </Box>
       <Grid container spacing={2}>
         {activities.map((activity) => {
           const colors = activityColors[activity.type] || activityColors.RUNNING;
