@@ -46,9 +46,8 @@ const ActivityDetail = () => {
           ...recommendationResponse.data,
         };
         
-        console.log('Activity Data:', activityResponse.data);
-        console.log('Recommendation Data:', recommendationResponse.data);
-        console.log('Combined Data:', combinedData);
+        const activityType = combinedData.type || 'Activity';
+        document.title = `${activityType} Details - AEG Fitness`;
         
         setActivity(combinedData);
       } catch (error) {

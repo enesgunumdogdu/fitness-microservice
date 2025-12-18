@@ -1,6 +1,11 @@
 import { Box, Button, Card, CardContent, Container, Typography, Avatar } from "@mui/material";
+import { useEffect } from "react";
 
 const LoginPage = ({ onLogin }) => {
+  useEffect(() => {
+    document.title = "Login - AEG Fitness";
+  }, []);
+
   const handleLogin = () => {
     if (onLogin) {
       onLogin();
@@ -97,7 +102,7 @@ const LoginPage = ({ onLogin }) => {
                 letterSpacing: "-0.5px",
               }}
             >
-              Fitness Tracker
+              AEG Fitness
             </Typography>
             <Typography
               variant="subtitle1"
