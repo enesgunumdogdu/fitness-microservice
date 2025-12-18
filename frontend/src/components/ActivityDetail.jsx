@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import { getActivityDetail } from '../services/api';
+import { getActivity, getActivityRecommendation } from '../services/api';
 import {
   Box,
   Card,
@@ -36,8 +36,21 @@ const ActivityDetail = () => {
     const fetchActivityDetail = async () => {
       try {
         setLoading(true);
-        const response = await getActivityDetail(id);
-        setActivity(response.data);
+        const [activityResponse, recommendationResponse] = await Promise.all([
+          getActivity(id),
+          getActivityRecommendation(id)
+        ]);
+        
+        const combinedData = {
+          ...activityResponse.data,
+          ...recommendationResponse.data,
+        };
+        
+        console.log('Activity Data:', activityResponse.data);
+        console.log('Recommendation Data:', recommendationResponse.data);
+        console.log('Combined Data:', combinedData);
+        
+        setActivity(combinedData);
       } catch (error) {
         console.error(error);
       } finally {
@@ -82,8 +95,13 @@ const ActivityDetail = () => {
     );
   }
 
-  const colors = activityColors[activity.type] || activityColors.RUNNING;
-  const emoji = activityEmojis[activity.type] || '🏃';
+  const activityType = activity.type || activity.activityType || 'RUNNING';
+  const duration = activity.duration || 0;
+  const calories = activity.caloriesBurned || 0;
+  const createdAt = activity.createdAt || new Date().toISOString();
+  
+  const colors = activityColors[activityType] || activityColors.RUNNING;
+  const emoji = activityEmojis[activityType] || '🏃';
 
   return (
     <Box
@@ -132,10 +150,10 @@ const ActivityDetail = () => {
               </Typography>
               <Box>
                 <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                  {activity.type}
+                  {activityType}
                 </Typography>
                 <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                  {new Date(activity.createdAt).toLocaleDateString('en-US', {
+                  {new Date(createdAt).toLocaleDateString('en-US', {
                     weekday: 'long',
                     month: 'long',
                     day: 'numeric',
@@ -148,7 +166,7 @@ const ActivityDetail = () => {
             </Box>
             <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
               <Chip
-                label={`${activity.duration} minutes`}
+                label={`${duration} minutes`}
                 sx={{
                   background: "rgba(255, 255, 255, 0.2)",
                   color: "white",
@@ -158,7 +176,7 @@ const ActivityDetail = () => {
                 }}
               />
               <Chip
-                label={`${activity.caloriesBurned} calories`}
+                label={`${calories} calories`}
                 sx={{
                   background: "rgba(255, 255, 255, 0.2)",
                   color: "white",
