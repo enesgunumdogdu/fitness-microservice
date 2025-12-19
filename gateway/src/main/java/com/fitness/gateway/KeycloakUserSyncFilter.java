@@ -6,7 +6,9 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
@@ -35,12 +37,19 @@ public class KeycloakUserSyncFilter implements WebFilter {
 
         String keycloakId = registerRequest.getKeycloakId();
 
-        ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
-                .headers(headers -> headers.set("X-User-ID", keycloakId))
-                .build();
+        HttpHeaders newHeaders = new HttpHeaders();
+        newHeaders.putAll(exchange.getRequest().getHeaders());
+        newHeaders.set("X-User-ID", keycloakId);
 
-        ServerWebExchange modifiedExchange = exchange.mutate()
-                .request(modifiedRequest)
+        ServerHttpRequest mutatedRequest = new ServerHttpRequestDecorator(exchange.getRequest()) {
+            @Override
+            public HttpHeaders getHeaders() {
+                return newHeaders;
+            }
+        };
+
+        ServerWebExchange mutatedExchange = exchange.mutate()
+                .request(mutatedRequest)
                 .build();
 
         return userService.validateUserReactive(keycloakId)
@@ -58,7 +67,7 @@ public class KeycloakUserSyncFilter implements WebFilter {
                     log.warn("User sync error (non-blocking): {}", e.getMessage());
                     return Mono.just(true);
                 })
-                .then(chain.filter(modifiedExchange));
+                .then(chain.filter(mutatedExchange));
     }
 
     private RegisterRequest getUserDetails(String token) {
