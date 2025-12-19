@@ -36,14 +36,20 @@ const ActivityDetail = () => {
     const fetchActivityDetail = async () => {
       try {
         setLoading(true);
-        const [activityResponse, recommendationResponse] = await Promise.all([
-          getActivity(id),
-          getActivityRecommendation(id)
-        ]);
+        
+        const activityResponse = await getActivity(id);
+        
+        let recommendationData = {};
+        try {
+          const recommendationResponse = await getActivityRecommendation(id);
+          recommendationData = recommendationResponse.data;
+        } catch (recError) {
+          console.log('Recommendation not ready yet:', recError);
+        }
         
         const combinedData = {
           ...activityResponse.data,
-          ...recommendationResponse.data,
+          ...recommendationData,
         };
         
         const activityType = combinedData.type || 'Activity';
@@ -51,7 +57,7 @@ const ActivityDetail = () => {
         
         setActivity(combinedData);
       } catch (error) {
-        console.error(error);
+        console.error('Error fetching activity:', error);
       } finally {
         setLoading(false);
       }
@@ -59,6 +65,26 @@ const ActivityDetail = () => {
 
     fetchActivityDetail();
   }, [id]);
+
+  useEffect(() => {
+    if (activity && !activity.recommendation) {
+      const interval = setInterval(async () => {
+        try {
+          const recommendationResponse = await getActivityRecommendation(id);
+          if (recommendationResponse.data.recommendation) {
+            setActivity(prev => ({
+              ...prev,
+              ...recommendationResponse.data,
+            }));
+          }
+        } catch (error) {
+          console.log('Recommendation still not ready');
+        }
+      }, 5000);
+
+      return () => clearInterval(interval);
+    }
+  }, [activity, id]);
 
   if (loading) {
     return (
@@ -188,100 +214,121 @@ const ActivityDetail = () => {
           </Box>
         </Card>
 
-        {activity.recommendation && (
-          <Card elevation={8} sx={{ borderRadius: 3 }}>
-            <CardContent sx={{ p: 4 }}>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-                <Typography variant="h3" sx={{ mr: 2 }}>
-                  🤖
-                </Typography>
-                <Typography variant="h5" sx={{ fontWeight: 700 }}>
-                  AI-Powered Insights
-                </Typography>
-              </Box>
+        <Card elevation={8} sx={{ borderRadius: 3 }}>
+          <CardContent sx={{ p: 4 }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+              <Typography variant="h3" sx={{ mr: 2 }}>
+                🤖
+              </Typography>
+              <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                AI-Powered Insights
+              </Typography>
+            </Box>
 
+            {!activity.recommendation ? (
               <Paper
                 elevation={0}
                 sx={{
-                  p: 3,
-                  mb: 3,
-                  background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+                  p: 4,
+                  background: "linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%)",
                   borderRadius: 2,
+                  textAlign: "center",
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                  Analysis
+                <CircularProgress size={40} sx={{ mb: 2, color: "#f39c12" }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: "#856404" }}>
+                  Generating AI Recommendations
                 </Typography>
-                <Typography paragraph sx={{ mb: 0, lineHeight: 1.8 }}>
-                  {activity.recommendation}
+                <Typography variant="body2" sx={{ color: "#856404", opacity: 0.8 }}>
+                  Our AI is analyzing your activity. This usually takes a few moments.
+                  Please refresh the page in a moment to see your personalized insights.
                 </Typography>
               </Paper>
-
-              {activity.improvements && activity.improvements.length > 0 && (
-                <>
-                  <Divider sx={{ my: 3 }} />
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                    💡 Areas for Improvement
+            ) : (
+              <>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 3,
+                    mb: 3,
+                    background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+                    borderRadius: 2,
+                  }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                    Analysis
                   </Typography>
-                  <Box sx={{ pl: 2 }}>
-                    {activity.improvements.map((improvement, index) => (
-                      <Typography
-                        key={index}
-                        paragraph
-                        sx={{ display: "flex", alignItems: "flex-start", mb: 1 }}
-                      >
-                        <span style={{ marginRight: 8 }}>•</span>
-                        <span>{improvement}</span>
-                      </Typography>
-                    ))}
-                  </Box>
-                </>
-              )}
-
-              {activity.suggestions && activity.suggestions.length > 0 && (
-                <>
-                  <Divider sx={{ my: 3 }} />
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                    ✨ Suggestions
+                  <Typography paragraph sx={{ mb: 0, lineHeight: 1.8 }}>
+                    {activity.recommendation}
                   </Typography>
-                  <Box sx={{ pl: 2 }}>
-                    {activity.suggestions.map((suggestion, index) => (
-                      <Typography
-                        key={index}
-                        paragraph
-                        sx={{ display: "flex", alignItems: "flex-start", mb: 1 }}
-                      >
-                        <span style={{ marginRight: 8 }}>•</span>
-                        <span>{suggestion}</span>
-                      </Typography>
-                    ))}
-                  </Box>
-                </>
-              )}
+                </Paper>
 
-              {activity.safety && activity.safety.length > 0 && (
-                <>
-                  <Divider sx={{ my: 3 }} />
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                    ⚠️ Safety Guidelines
-                  </Typography>
-                  <Box sx={{ pl: 2 }}>
-                    {activity.safety.map((safety, index) => (
-                      <Typography
-                        key={index}
-                        paragraph
-                        sx={{ display: "flex", alignItems: "flex-start", mb: 1 }}
-                      >
-                        <span style={{ marginRight: 8 }}>•</span>
-                        <span>{safety}</span>
-                      </Typography>
-                    ))}
-                  </Box>
-                </>
-              )}
-            </CardContent>
-          </Card>
-        )}
+                {activity.improvements && activity.improvements.length > 0 && (
+                  <>
+                    <Divider sx={{ my: 3 }} />
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                      💡 Areas for Improvement
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      {activity.improvements.map((improvement, index) => (
+                        <Typography
+                          key={index}
+                          paragraph
+                          sx={{ display: "flex", alignItems: "flex-start", mb: 1 }}
+                        >
+                          <span style={{ marginRight: 8 }}>•</span>
+                          <span>{improvement}</span>
+                        </Typography>
+                      ))}
+                    </Box>
+                  </>
+                )}
+
+                {activity.suggestions && activity.suggestions.length > 0 && (
+                  <>
+                    <Divider sx={{ my: 3 }} />
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                      ✨ Suggestions
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      {activity.suggestions.map((suggestion, index) => (
+                        <Typography
+                          key={index}
+                          paragraph
+                          sx={{ display: "flex", alignItems: "flex-start", mb: 1 }}
+                        >
+                          <span style={{ marginRight: 8 }}>•</span>
+                          <span>{suggestion}</span>
+                        </Typography>
+                      ))}
+                    </Box>
+                  </>
+                )}
+
+                {activity.safety && activity.safety.length > 0 && (
+                  <>
+                    <Divider sx={{ my: 3 }} />
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                      ⚠️ Safety Guidelines
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      {activity.safety.map((safety, index) => (
+                        <Typography
+                          key={index}
+                          paragraph
+                          sx={{ display: "flex", alignItems: "flex-start", mb: 1 }}
+                        >
+                          <span style={{ marginRight: 8 }}>•</span>
+                          <span>{safety}</span>
+                        </Typography>
+                      ))}
+                    </Box>
+                  </>
+                )}
+              </>
+            )}
+          </CardContent>
+        </Card>
       </Container>
     </Box>
   );
