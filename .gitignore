@@ -1,0 +1,21 @@
+# Environment variables (MUST NOT be committed)
+.env
+.env.local
+.env.production
+
+# Docker
+*.log
+docker-compose.override.yml
+
+# SSL Certificates
+nginx/ssl/
+*.pem
+*.key
+*.crt
+
+# Backups
+backups/
+
+# IDE
+.idea/
+.vscode/
