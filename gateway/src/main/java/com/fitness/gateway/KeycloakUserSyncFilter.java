@@ -12,6 +12,7 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Component
 @Slf4j
@@ -39,30 +40,33 @@ public class KeycloakUserSyncFilter implements WebFilter {
         }
 
         String finalUserId = userId;
+        RegisterRequest finalRegisterRequest = registerRequest;
 
-        return Mono.defer(() -> {
-            try {
-                Boolean exist = userService.validateUser(finalUserId);
+        return userService.validateUserReactive(finalUserId)
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(exists -> {
+                    if (!exists && finalRegisterRequest != null) {
+                        return userService.registerUserReactive(finalRegisterRequest)
+                                .then(Mono.just(true));
+                    }
+                    log.info("User already exists, Skipping sync.");
+                    return Mono.just(true);
+                })
+                .onErrorResume(e -> {
+                    log.error("Error during user sync: {}", e.getMessage());
+                    return Mono.just(true);
+                })
+                .flatMap(result -> {
+                    ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
+                            .header("X-User-ID", finalUserId)
+                            .build();
 
-                if (!exist && registerRequest != null) {
-                    userService.registerUser(registerRequest);
-                } else {
-                    log.info("User already exist, Skipping sync.");
-                }
-            } catch (Exception e) {
-                log.error("Error during user sync: {}", e.getMessage());
-            }
+                    ServerWebExchange modifiedExchange = exchange.mutate()
+                            .request(modifiedRequest)
+                            .build();
 
-            ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
-                    .header("X-User-ID", finalUserId)
-                    .build();
-
-            ServerWebExchange modifiedExchange = exchange.mutate()
-                    .request(modifiedRequest)
-                    .build();
-
-            return chain.filter(modifiedExchange);
-        });
+                    return chain.filter(modifiedExchange);
+                });
     }
 
     private RegisterRequest getUserDetails(String token) {
