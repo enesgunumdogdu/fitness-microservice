@@ -2,14 +2,15 @@ server:
   port: 8083
 
 spring:
-  mongodb:
-    uri: mongodb://localhost:27017/fitnessrecommendation
-    database: fitnessrecommendation
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://mongodb:27017/fitnessrecommendation}
+      database: ${SPRING_DATA_MONGODB_DATABASE:fitnessrecommendation}
   rabbitmq:
-    host: localhost
+    host: ${SPRING_RABBITMQ_HOST:rabbitmq}
     port: 5672
-    username: guest
-    password: guest
+    username: ${SPRING_RABBITMQ_USERNAME}
+    password: ${SPRING_RABBITMQ_PASSWORD}
     listener:
       simple:
         retry:
@@ -23,7 +24,7 @@ spring:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://eureka-server:8761/eureka/
 
 rabbitmq:
   exchange:

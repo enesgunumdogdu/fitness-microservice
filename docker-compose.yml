@@ -67,6 +67,7 @@ services:
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
       KC_PROXY: edge
+      KC_HTTP_RELATIVE_PATH: /auth
     command: start
     depends_on:
       postgres:
@@ -145,7 +146,8 @@ services:
       context: ./activityservice
     container_name: fitness-activity-service
     environment:
-      SPRING_MONGODB_URI: mongodb://mongodb:27017/fitnessactivity
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/fitnessactivity
+      SPRING_DATA_MONGODB_DATABASE: fitnessactivity
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
       SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
@@ -167,7 +169,8 @@ services:
       context: ./aiservice
     container_name: fitness-ai-service
     environment:
-      SPRING_MONGODB_URI: mongodb://mongodb:27017/fitnessrecommendation
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/fitnessrecommendation
+      SPRING_DATA_MONGODB_DATABASE: fitnessrecommendation
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
       SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
@@ -191,7 +194,7 @@ services:
       context: ./gateway
     container_name: fitness-gateway
     environment:
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/fitness-oauth2/protocol/openid-connect/certs
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/auth/realms/fitness-oauth2/protocol/openid-connect/certs
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
       SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
     depends_on:
