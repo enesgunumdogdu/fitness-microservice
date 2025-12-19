@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -13,42 +14,36 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 public class UserService {
     private final WebClient userServiceWebClient;
 
-    public Boolean validateUser(String userId) {
+    public Mono<Boolean> validateUserReactive(String userId) {
         log.info("Calling User Validation API for userId: {}", userId);
-        try {
-            return Boolean.TRUE.equals(userServiceWebClient.get()
-                    .uri("/api/users/{userId}/validate", userId)
-                    .retrieve()
-                    .bodyToMono(Boolean.class)
-                    .block());
-        } catch (WebClientResponseException e) {
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                return false;
-            }
-            if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                throw new RuntimeException("Invalid Request: " + userId);
-            }
-            throw new RuntimeException("Unexpected error: " + e.getMessage());
-        }
+        return userServiceWebClient.get()
+                .uri("/api/users/{userId}/validate", userId)
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .defaultIfEmpty(false)
+                .onErrorResume(WebClientResponseException.class, e -> {
+                    if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                        return Mono.just(false);
+                    }
+                    log.error("Error validating user: {}", e.getMessage());
+                    return Mono.just(false);
+                })
+                .onErrorResume(e -> {
+                    log.error("Error validating user: {}", e.getMessage());
+                    return Mono.just(false);
+                });
     }
 
-    public UserResponse registerUser(RegisterRequest request) {
+    public Mono<UserResponse> registerUserReactive(RegisterRequest request) {
         log.info("Calling User Registration API for email: {}", request.getEmail());
-        try {
-            return userServiceWebClient.post()
-                    .uri("/api/users/register")
-                    .bodyValue(request)
-                    .retrieve()
-                    .bodyToMono(UserResponse.class)
-                    .block();
-        } catch (WebClientResponseException e) {
-            if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                throw new RuntimeException("Bad Request: " + e.getMessage());
-            }
-            if (e.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
-                throw new RuntimeException("Internal Server Error: " + e.getMessage());
-            }
-            throw new RuntimeException("Unexpected error: " + e.getMessage());
-        }
+        return userServiceWebClient.post()
+                .uri("/api/users/register")
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(UserResponse.class)
+                .onErrorResume(e -> {
+                    log.error("Error registering user: {}", e.getMessage());
+                    return Mono.empty();
+                });
     }
 }
