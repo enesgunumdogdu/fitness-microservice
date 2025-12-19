@@ -23,50 +23,42 @@ public class KeycloakUserSyncFilter implements WebFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         String token = exchange.getRequest().getHeaders().getFirst("Authorization");
-        String userId = exchange.getRequest().getHeaders().getFirst("X-User-ID");
 
-        if (token == null) {
+        if (token == null || !token.startsWith("Bearer ")) {
             return chain.filter(exchange);
         }
 
         RegisterRequest registerRequest = getUserDetails(token);
-
-        if (userId == null && registerRequest != null) {
-            userId = registerRequest.getKeycloakId();
-        }
-
-        if (userId == null) {
+        if (registerRequest == null || registerRequest.getKeycloakId() == null) {
             return chain.filter(exchange);
         }
 
-        String finalUserId = userId;
-        RegisterRequest finalRegisterRequest = registerRequest;
+        String keycloakId = registerRequest.getKeycloakId();
 
-        return userService.validateUserReactive(finalUserId)
+        ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
+                .headers(headers -> headers.set("X-User-ID", keycloakId))
+                .build();
+
+        ServerWebExchange modifiedExchange = exchange.mutate()
+                .request(modifiedRequest)
+                .build();
+
+        return userService.validateUserReactive(keycloakId)
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMap(exists -> {
-                    if (!exists && finalRegisterRequest != null) {
-                        return userService.registerUserReactive(finalRegisterRequest)
+                    if (!exists) {
+                        log.info("User not found, registering: {}", registerRequest.getEmail());
+                        return userService.registerUserReactive(registerRequest)
                                 .then(Mono.just(true));
                     }
-                    log.info("User already exists, Skipping sync.");
+                    log.debug("User already exists, skipping sync");
                     return Mono.just(true);
                 })
                 .onErrorResume(e -> {
-                    log.error("Error during user sync: {}", e.getMessage());
+                    log.warn("User sync error (non-blocking): {}", e.getMessage());
                     return Mono.just(true);
                 })
-                .flatMap(result -> {
-                    ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
-                            .header("X-User-ID", finalUserId)
-                            .build();
-
-                    ServerWebExchange modifiedExchange = exchange.mutate()
-                            .request(modifiedRequest)
-                            .build();
-
-                    return chain.filter(modifiedExchange);
-                });
+                .then(chain.filter(modifiedExchange));
     }
 
     private RegisterRequest getUserDetails(String token) {
