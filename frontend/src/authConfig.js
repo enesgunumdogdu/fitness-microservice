@@ -4,4 +4,5 @@ export const authConfig = {
     tokenEndpoint: `${import.meta.env.VITE_KEYCLOAK_URL}/realms/fitness-oauth2/protocol/openid-connect/token`,
     redirectUri: window.location.origin,
     scope: 'openid profile email offline_access',
+    autoLogin: false,
   }
