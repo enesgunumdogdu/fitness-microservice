@@ -3,6 +3,7 @@ import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "react-oauth2-code-pkce";
 import ActivityForm from "../components/ActivityForm";
 import ActivityList from "../components/ActivityList";
+import Footer from "../components/Footer";
 
 const ActivitiesPage = () => {
   const { logOut, tokenData } = useContext(AuthContext);
@@ -23,7 +24,8 @@ const ActivitiesPage = () => {
         minHeight: "100vh",
         background: "#0a0a0a",
         position: "relative",
-        pb: 4,
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <Box
@@ -133,7 +135,7 @@ const ActivitiesPage = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="lg" sx={{ mt: 6, position: "relative", zIndex: 1 }}>
+      <Container maxWidth="lg" sx={{ mt: 6, mb: 4, flex: 1, position: "relative", zIndex: 1 }}>
         <Box sx={{ mb: 5, textAlign: "center" }}>
           <Typography
             variant="h3"
@@ -174,6 +176,7 @@ const ActivitiesPage = () => {
           </Box>
         </Box>
       </Container>
+      <Footer />
     </Box>
   );
 };
