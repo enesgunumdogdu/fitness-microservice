@@ -1,5 +1,6 @@
 import { Box, Button, Card, CardContent, Container, Typography, Avatar } from "@mui/material";
 import { useEffect } from "react";
+import Footer from "../components/Footer";
 
 const LoginPage = ({ onLogin }) => {
   useEffect(() => {
@@ -17,6 +18,7 @@ const LoginPage = ({ onLogin }) => {
       sx={{
         minHeight: "100vh",
         display: "flex",
+        flexDirection: "column",
         background: "#0a0a0a",
         position: "relative",
         overflow: "hidden",
@@ -70,6 +72,7 @@ const LoginPage = ({ onLogin }) => {
           justifyContent: "center",
           position: "relative",
           zIndex: 1,
+          flex: 1,
           py: 4,
         }}
       >
@@ -248,6 +251,7 @@ const LoginPage = ({ onLogin }) => {
           </CardContent>
         </Card>
       </Container>
+      <Footer />
     </Box>
   );
 };

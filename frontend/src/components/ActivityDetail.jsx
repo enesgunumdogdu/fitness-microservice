@@ -134,7 +134,8 @@ const ActivityDetail = () => {
       sx={{
         minHeight: "100vh",
         background: "#0a0a0a",
-        py: 4,
+        display: "flex",
+        flexDirection: "column",
         position: "relative",
       }}
     >
@@ -174,7 +175,7 @@ const ActivityDetail = () => {
           }}
         />
       </Box>
-      <Container maxWidth="md" sx={{ position: "relative", zIndex: 1 }}>
+      <Container maxWidth="md" sx={{ position: "relative", zIndex: 1, flex: 1, py: 4 }}>
         <Button
           variant="outlined"
           onClick={() => navigate('/activities')}
