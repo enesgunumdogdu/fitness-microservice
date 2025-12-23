@@ -21,24 +21,66 @@ const ActivitiesPage = () => {
     <Box
       sx={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        background: "#0a0a0a",
+        position: "relative",
         pb: 4,
       }}
     >
-      <AppBar
-        position="static"
-        elevation={0}
+      <Box
         sx={{
-          background: "rgba(255, 255, 255, 0.1)",
-          backdropFilter: "blur(10px)",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          pointerEvents: "none",
+          zIndex: 0,
         }}
       >
-        <Toolbar>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "-20%",
+            right: "-10%",
+            width: "50%",
+            height: "50%",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%)",
+            filter: "blur(80px)",
+          }}
+        />
+        <Box
+          sx={{
+            position: "absolute",
+            bottom: "-20%",
+            left: "-10%",
+            width: "50%",
+            height: "50%",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(118, 75, 162, 0.1) 0%, transparent 70%)",
+            filter: "blur(80px)",
+          }}
+        />
+      </Box>
+      <AppBar
+        position="sticky"
+        elevation={0}
+        sx={{
+          background: "rgba(20, 20, 20, 0.8)",
+          backdropFilter: "blur(20px)",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
+          zIndex: 1000,
+        }}
+      >
+        <Toolbar sx={{ py: 0.5 }}>
           <Avatar
             sx={{
               mr: 2,
               background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              fontSize: 20,
+              fontSize: 24,
+              width: 45,
+              height: 45,
+              boxShadow: "0 4px 20px rgba(102, 126, 234, 0.3)",
             }}
           >
             💪
@@ -46,13 +88,24 @@ const ActivitiesPage = () => {
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, fontWeight: 600, color: "white" }}
+            className="gradient-text"
+            sx={{ 
+              flexGrow: 1, 
+              fontWeight: 800,
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+            }}
           >
-            AEG Fitness
+            AEG FITNESS
           </Typography>
           <Typography
             variant="body2"
-            sx={{ mr: 2, color: "rgba(255, 255, 255, 0.9)" }}
+            sx={{ 
+              mr: 3, 
+              color: "rgba(255, 255, 255, 0.7)",
+              fontWeight: 500,
+              display: { xs: "none", sm: "block" },
+            }}
           >
             Welcome, {username}
           </Typography>
@@ -61,11 +114,17 @@ const ActivitiesPage = () => {
             onClick={logOut}
             sx={{
               color: "white",
-              borderColor: "rgba(255, 255, 255, 0.3)",
-              textTransform: "none",
+              borderColor: "rgba(102, 126, 234, 0.4)",
+              textTransform: "uppercase",
+              fontWeight: 600,
+              letterSpacing: "0.5px",
+              borderRadius: 2,
+              px: 3,
+              transition: "all 0.3s ease",
               "&:hover": {
-                borderColor: "white",
-                background: "rgba(255, 255, 255, 0.1)",
+                borderColor: "#667eea",
+                background: "rgba(102, 126, 234, 0.1)",
+                boxShadow: "0 4px 20px rgba(102, 126, 234, 0.3)",
               },
             }}
           >
@@ -74,24 +133,26 @@ const ActivitiesPage = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="lg" sx={{ mt: 4 }}>
-        <Box sx={{ mb: 4 }}>
+      <Container maxWidth="lg" sx={{ mt: 6, position: "relative", zIndex: 1 }}>
+        <Box sx={{ mb: 5, textAlign: "center" }}>
           <Typography
-            variant="h4"
+            variant="h3"
+            className="gradient-text"
             sx={{
-              color: "white",
-              fontWeight: 700,
-              mb: 1,
-              textAlign: "center",
+              fontWeight: 900,
+              mb: 2,
+              textTransform: "uppercase",
+              letterSpacing: "2px",
             }}
           >
             Track Your Fitness Journey
           </Typography>
           <Typography
-            variant="body1"
+            variant="h6"
             sx={{
-              color: "rgba(255, 255, 255, 0.9)",
-              textAlign: "center",
+              color: "rgba(255, 255, 255, 0.6)",
+              fontWeight: 400,
+              letterSpacing: "0.5px",
             }}
           >
             Log your activities and get personalized AI recommendations
