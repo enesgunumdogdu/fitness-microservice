@@ -24,7 +24,8 @@ const ActivitiesPage = () => {
         minHeight: "100vh",
         background: "#0a0a0a",
         position: "relative",
-        pb: 4,
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <Box
@@ -134,7 +135,7 @@ const ActivitiesPage = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="lg" sx={{ mt: 6, position: "relative", zIndex: 1 }}>
+      <Container maxWidth="lg" sx={{ mt: 6, mb: 4, flex: 1, position: "relative", zIndex: 1 }}>
         <Box sx={{ mb: 5, textAlign: "center" }}>
           <Typography
             variant="h3"
