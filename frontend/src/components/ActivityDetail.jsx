@@ -13,6 +13,7 @@ import {
   Divider,
   Paper,
 } from '@mui/material';
+import Footer from './Footer';
 
 const activityEmojis = {
   RUNNING: '🏃',
@@ -471,6 +472,7 @@ const ActivityDetail = () => {
           </CardContent>
         </Card>
       </Container>
+      <Footer />
     </Box>
   );
 };

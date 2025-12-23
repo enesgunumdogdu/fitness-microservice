@@ -3,6 +3,7 @@ import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "react-oauth2-code-pkce";
 import ActivityForm from "../components/ActivityForm";
 import ActivityList from "../components/ActivityList";
+import Footer from "../components/Footer";
 
 const ActivitiesPage = () => {
   const { logOut, tokenData } = useContext(AuthContext);
@@ -174,6 +175,7 @@ const ActivitiesPage = () => {
           </Box>
         </Box>
       </Container>
+      <Footer />
     </Box>
   );
 };
