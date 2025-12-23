@@ -94,10 +94,10 @@ const ActivityDetail = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          background: "#0a0a0a",
         }}
       >
-        <CircularProgress sx={{ color: "white" }} size={60} />
+        <CircularProgress sx={{ color: "#667eea" }} size={60} thickness={4} />
       </Box>
     );
   }
@@ -110,10 +110,10 @@ const ActivityDetail = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          background: "#0a0a0a",
         }}
       >
-        <Typography variant="h6" sx={{ color: "white" }}>
+        <Typography variant="h6" sx={{ color: "#ffffff", fontWeight: 600 }}>
           Activity not found
         </Typography>
       </Box>
@@ -132,22 +132,63 @@ const ActivityDetail = () => {
     <Box
       sx={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        background: "#0a0a0a",
         py: 4,
+        position: "relative",
       }}
     >
-      <Container maxWidth="md">
+      <Box
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "-20%",
+            right: "-10%",
+            width: "50%",
+            height: "50%",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%)",
+            filter: "blur(80px)",
+          }}
+        />
+        <Box
+          sx={{
+            position: "absolute",
+            bottom: "-20%",
+            left: "-10%",
+            width: "50%",
+            height: "50%",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(118, 75, 162, 0.1) 0%, transparent 70%)",
+            filter: "blur(80px)",
+          }}
+        />
+      </Box>
+      <Container maxWidth="md" sx={{ position: "relative", zIndex: 1 }}>
         <Button
           variant="outlined"
           onClick={() => navigate('/activities')}
           sx={{
             mb: 3,
             color: "white",
-            borderColor: "rgba(255, 255, 255, 0.3)",
-            textTransform: "none",
+            borderColor: "rgba(102, 126, 234, 0.4)",
+            textTransform: "uppercase",
+            fontWeight: 600,
+            letterSpacing: "0.5px",
+            px: 3,
             "&:hover": {
-              borderColor: "white",
-              background: "rgba(255, 255, 255, 0.1)",
+              borderColor: "#667eea",
+              background: "rgba(102, 126, 234, 0.1)",
+              boxShadow: "0 4px 20px rgba(102, 126, 234, 0.3)",
             },
           }}
         >
@@ -155,29 +196,46 @@ const ActivityDetail = () => {
         </Button>
 
         <Card
-          elevation={8}
+          elevation={0}
           sx={{
             borderRadius: 3,
             overflow: "hidden",
-            mb: 3,
+            mb: 4,
+            background: "rgba(20, 20, 20, 0.6)",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
           }}
         >
           <Box
             sx={{
               background: `linear-gradient(135deg, ${colors.from} 0%, ${colors.to} 100%)`,
-              p: 4,
+              p: 5,
               color: "white",
+              position: "relative",
+              overflow: "hidden",
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-              <Typography variant="h2" sx={{ mr: 2 }}>
+            <Box
+              sx={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+                width: "200px",
+                height: "200px",
+                background: "rgba(255, 255, 255, 0.1)",
+                borderRadius: "50%",
+                transform: "translate(30%, -30%)",
+              }}
+            />
+            <Box sx={{ display: "flex", alignItems: "center", mb: 4, position: "relative", zIndex: 1 }}>
+              <Typography variant="h1" sx={{ mr: 3, fontSize: "5rem" }}>
                 {emoji}
               </Typography>
               <Box>
-                <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+                <Typography variant="h3" sx={{ fontWeight: 900, mb: 1.5, textTransform: "uppercase", letterSpacing: "1px" }}>
                   {activityType}
                 </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                <Typography variant="body1" sx={{ opacity: 0.9, fontWeight: 500 }}>
                   {new Date(createdAt).toLocaleDateString('en-US', {
                     weekday: 'long',
                     month: 'long',
@@ -189,38 +247,60 @@ const ActivityDetail = () => {
                 </Typography>
               </Box>
             </Box>
-            <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+            <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", position: "relative", zIndex: 1 }}>
               <Chip
                 label={`${duration} minutes`}
                 sx={{
-                  background: "rgba(255, 255, 255, 0.2)",
+                  background: "rgba(255, 255, 255, 0.25)",
+                  backdropFilter: "blur(10px)",
                   color: "white",
-                  fontWeight: 600,
-                  fontSize: "1rem",
-                  py: 2.5,
+                  fontWeight: 700,
+                  fontSize: "1.1rem",
+                  py: 3,
+                  px: 1,
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
                 }}
               />
               <Chip
                 label={`${calories} calories`}
                 sx={{
-                  background: "rgba(255, 255, 255, 0.2)",
+                  background: "rgba(255, 255, 255, 0.25)",
+                  backdropFilter: "blur(10px)",
                   color: "white",
-                  fontWeight: 600,
-                  fontSize: "1rem",
-                  py: 2.5,
+                  fontWeight: 700,
+                  fontSize: "1.1rem",
+                  py: 3,
+                  px: 1,
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
                 }}
               />
             </Box>
           </Box>
         </Card>
 
-        <Card elevation={8} sx={{ borderRadius: 3 }}>
-          <CardContent sx={{ p: 4 }}>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-              <Typography variant="h3" sx={{ mr: 2 }}>
+        <Card 
+          elevation={0} 
+          sx={{ 
+            borderRadius: 3,
+            background: "rgba(20, 20, 20, 0.6)",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
+          }}
+        >
+          <CardContent sx={{ p: 5 }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
+              <Typography variant="h2" sx={{ mr: 2, fontSize: "3rem" }}>
                 🤖
               </Typography>
-              <Typography variant="h5" sx={{ fontWeight: 700 }}>
+              <Typography 
+                variant="h4" 
+                className="gradient-text-fire"
+                sx={{ 
+                  fontWeight: 800,
+                  textTransform: "uppercase",
+                  letterSpacing: "1px",
+                }}
+              >
                 AI-Powered Insights
               </Typography>
             </Box>
@@ -229,17 +309,19 @@ const ActivityDetail = () => {
               <Paper
                 elevation={0}
                 sx={{
-                  p: 4,
-                  background: "linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%)",
+                  p: 5,
+                  background: "rgba(255, 193, 7, 0.1)",
+                  backdropFilter: "blur(10px)",
+                  border: "1px solid rgba(255, 193, 7, 0.3)",
                   borderRadius: 2,
                   textAlign: "center",
                 }}
               >
-                <CircularProgress size={40} sx={{ mb: 2, color: "#f39c12" }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: "#856404" }}>
+                <CircularProgress size={50} sx={{ mb: 3, color: "#ffc107" }} thickness={4} />
+                <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: "#ffc107", textTransform: "uppercase" }}>
                   Generating AI Recommendations
                 </Typography>
-                <Typography variant="body2" sx={{ color: "#856404", opacity: 0.8 }}>
+                <Typography variant="body1" sx={{ color: "rgba(255, 193, 7, 0.8)", lineHeight: 1.8 }}>
                   Our AI is analyzing your activity. This usually takes a few moments.
                   Please refresh the page in a moment to see your personalized insights.
                 </Typography>
@@ -249,24 +331,44 @@ const ActivityDetail = () => {
                 <Paper
                   elevation={0}
                   sx={{
-                    p: 3,
-                    mb: 3,
-                    background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+                    p: 4,
+                    mb: 4,
+                    background: "rgba(102, 126, 234, 0.1)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(102, 126, 234, 0.3)",
                     borderRadius: 2,
                   }}
                 >
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                  <Typography 
+                    variant="h6" 
+                    sx={{ 
+                      fontWeight: 700, 
+                      mb: 2,
+                      color: "#667eea",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.5px",
+                    }}
+                  >
                     Analysis
                   </Typography>
-                  <Typography paragraph sx={{ mb: 0, lineHeight: 1.8 }}>
+                  <Typography paragraph sx={{ mb: 0, lineHeight: 2, color: "rgba(255, 255, 255, 0.9)", fontSize: "1rem" }}>
                     {activity.recommendation}
                   </Typography>
                 </Paper>
 
                 {activity.improvements && activity.improvements.length > 0 && (
                   <>
-                    <Divider sx={{ my: 3 }} />
-                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                    <Divider sx={{ my: 4, borderColor: "rgba(255, 255, 255, 0.1)" }} />
+                    <Typography 
+                      variant="h6" 
+                      sx={{ 
+                        fontWeight: 700, 
+                        mb: 3,
+                        color: "#ffc107",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.5px",
+                      }}
+                    >
                       💡 Areas for Improvement
                     </Typography>
                     <Box sx={{ pl: 2 }}>
@@ -274,9 +376,16 @@ const ActivityDetail = () => {
                         <Typography
                           key={index}
                           paragraph
-                          sx={{ display: "flex", alignItems: "flex-start", mb: 1 }}
+                          sx={{ 
+                            display: "flex", 
+                            alignItems: "flex-start", 
+                            mb: 2,
+                            color: "rgba(255, 255, 255, 0.8)",
+                            lineHeight: 1.8,
+                            fontSize: "1rem",
+                          }}
                         >
-                          <span style={{ marginRight: 8 }}>•</span>
+                          <span style={{ marginRight: 12, color: "#ffc107", fontWeight: "bold" }}>•</span>
                           <span>{improvement}</span>
                         </Typography>
                       ))}
@@ -286,8 +395,17 @@ const ActivityDetail = () => {
 
                 {activity.suggestions && activity.suggestions.length > 0 && (
                   <>
-                    <Divider sx={{ my: 3 }} />
-                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                    <Divider sx={{ my: 4, borderColor: "rgba(255, 255, 255, 0.1)" }} />
+                    <Typography 
+                      variant="h6" 
+                      sx={{ 
+                        fontWeight: 700, 
+                        mb: 3,
+                        color: "#9333ea",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.5px",
+                      }}
+                    >
                       ✨ Suggestions
                     </Typography>
                     <Box sx={{ pl: 2 }}>
@@ -295,9 +413,16 @@ const ActivityDetail = () => {
                         <Typography
                           key={index}
                           paragraph
-                          sx={{ display: "flex", alignItems: "flex-start", mb: 1 }}
+                          sx={{ 
+                            display: "flex", 
+                            alignItems: "flex-start", 
+                            mb: 2,
+                            color: "rgba(255, 255, 255, 0.8)",
+                            lineHeight: 1.8,
+                            fontSize: "1rem",
+                          }}
                         >
-                          <span style={{ marginRight: 8 }}>•</span>
+                          <span style={{ marginRight: 12, color: "#9333ea", fontWeight: "bold" }}>•</span>
                           <span>{suggestion}</span>
                         </Typography>
                       ))}
@@ -307,8 +432,17 @@ const ActivityDetail = () => {
 
                 {activity.safety && activity.safety.length > 0 && (
                   <>
-                    <Divider sx={{ my: 3 }} />
-                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                    <Divider sx={{ my: 4, borderColor: "rgba(255, 255, 255, 0.1)" }} />
+                    <Typography 
+                      variant="h6" 
+                      sx={{ 
+                        fontWeight: 700, 
+                        mb: 3,
+                        color: "#f72585",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.5px",
+                      }}
+                    >
                       ⚠️ Safety Guidelines
                     </Typography>
                     <Box sx={{ pl: 2 }}>
@@ -316,9 +450,16 @@ const ActivityDetail = () => {
                         <Typography
                           key={index}
                           paragraph
-                          sx={{ display: "flex", alignItems: "flex-start", mb: 1 }}
+                          sx={{ 
+                            display: "flex", 
+                            alignItems: "flex-start", 
+                            mb: 2,
+                            color: "rgba(255, 255, 255, 0.8)",
+                            lineHeight: 1.8,
+                            fontSize: "1rem",
+                          }}
                         >
-                          <span style={{ marginRight: 8 }}>•</span>
+                          <span style={{ marginRight: 12, color: "#f72585", fontWeight: "bold" }}>•</span>
                           <span>{safety}</span>
                         </Typography>
                       ))}

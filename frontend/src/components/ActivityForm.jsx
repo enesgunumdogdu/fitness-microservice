@@ -55,21 +55,30 @@ const ActivityForm = ({ onActivityAdded }) => {
 
   return (
     <Card
-      elevation={8}
+      elevation={0}
       sx={{
         borderRadius: 3,
-        background: "white",
+        background: "rgba(20, 20, 20, 0.6)",
+        backdropFilter: "blur(20px)",
+        border: "1px solid rgba(255, 255, 255, 0.08)",
         position: "sticky",
-        top: 16,
+        top: 90,
+        transition: "all 0.3s ease",
+        "&:hover": {
+          border: "1px solid rgba(102, 126, 234, 0.3)",
+          boxShadow: "0 8px 32px rgba(102, 126, 234, 0.2)",
+        },
       }}
     >
-      <CardContent sx={{ p: 3 }}>
+      <CardContent sx={{ p: 4 }}>
         <Typography
           variant="h5"
+          className="gradient-text"
           sx={{
             mb: 3,
-            fontWeight: 600,
-            color: "text.primary",
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "1px",
           }}
         >
           Log New Activity
@@ -129,21 +138,41 @@ const ActivityForm = ({ onActivityAdded }) => {
             fullWidth
             disabled={loading}
             sx={{
-              py: 1.5,
+              py: 2,
               fontSize: "1rem",
-              fontWeight: 600,
-              textTransform: "none",
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: "1px",
               borderRadius: 2,
               background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              boxShadow: "0 4px 14px rgba(102, 126, 234, 0.4)",
-              transition: "all 0.3s ease-in-out",
+              boxShadow: "0 8px 24px rgba(102, 126, 234, 0.4)",
+              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              position: "relative",
+              overflow: "hidden",
+              "&:before": {
+                content: '""',
+                position: "absolute",
+                top: 0,
+                left: "-100%",
+                width: "100%",
+                height: "100%",
+                background: "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
+                transition: "left 0.5s",
+              },
               "&:hover": {
                 background: "linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%)",
-                boxShadow: "0 6px 20px rgba(102, 126, 234, 0.6)",
-                transform: "translateY(-2px)",
+                boxShadow: "0 12px 40px rgba(102, 126, 234, 0.6)",
+                transform: "translateY(-3px)",
+                "&:before": {
+                  left: "100%",
+                },
+              },
+              "&:active": {
+                transform: "translateY(-1px)",
               },
               "&:disabled": {
-                background: "linear-gradient(135deg, #9ca6ea 0%, #b199c2 100%)",
+                background: "rgba(102, 126, 234, 0.3)",
+                color: "rgba(255, 255, 255, 0.4)",
               },
             }}
           >
