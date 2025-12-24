@@ -175,7 +175,7 @@ const ActivityDetail = () => {
           }}
         />
       </Box>
-      <Container maxWidth="md" sx={{ position: "relative", zIndex: 1, flex: 1, py: 4 }}>
+      <Container maxWidth="md" sx={{ position: "relative", zIndex: 1, flex: 1, py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3 } }}>
         <Button
           variant="outlined"
           onClick={() => navigate('/activities')}
@@ -186,7 +186,8 @@ const ActivityDetail = () => {
             textTransform: "uppercase",
             fontWeight: 600,
             letterSpacing: "0.5px",
-            px: 3,
+            px: { xs: 2, sm: 3 },
+            fontSize: { xs: "0.75rem", sm: "0.875rem" },
             "&:hover": {
               borderColor: "#667eea",
               background: "rgba(102, 126, 234, 0.1)",
@@ -211,7 +212,7 @@ const ActivityDetail = () => {
           <Box
             sx={{
               background: `linear-gradient(135deg, ${colors.from} 0%, ${colors.to} 100%)`,
-              p: 5,
+              p: { xs: 3, sm: 4, md: 5 },
               color: "white",
               position: "relative",
               overflow: "hidden",
@@ -222,22 +223,22 @@ const ActivityDetail = () => {
                 position: "absolute",
                 top: 0,
                 right: 0,
-                width: "200px",
-                height: "200px",
+                width: { xs: "120px", sm: "150px", md: "200px" },
+                height: { xs: "120px", sm: "150px", md: "200px" },
                 background: "rgba(255, 255, 255, 0.1)",
                 borderRadius: "50%",
                 transform: "translate(30%, -30%)",
               }}
             />
-            <Box sx={{ display: "flex", alignItems: "center", mb: 4, position: "relative", zIndex: 1 }}>
-              <Typography variant="h1" sx={{ mr: 3, fontSize: "5rem" }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: { xs: 2, sm: 3, md: 4 }, position: "relative", zIndex: 1, flexWrap: "wrap", gap: { xs: 1, sm: 2 } }}>
+              <Typography variant="h1" sx={{ fontSize: { xs: "3rem", sm: "4rem", md: "5rem" } }}>
                 {emoji}
               </Typography>
-              <Box>
-                <Typography variant="h3" sx={{ fontWeight: 900, mb: 1.5, textTransform: "uppercase", letterSpacing: "1px" }}>
+              <Box sx={{ flex: "1 1 auto", minWidth: { xs: "100%", sm: "auto" }, maxWidth: "100%" }}>
+                <Typography variant="h3" sx={{ fontWeight: 900, mb: 1.5, textTransform: "uppercase", letterSpacing: "1px", fontSize: { xs: "1.5rem", sm: "2rem", md: "3rem" }, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {activityType}
                 </Typography>
-                <Typography variant="body1" sx={{ opacity: 0.9, fontWeight: 500 }}>
+                <Typography variant="body1" sx={{ opacity: 0.9, fontWeight: 500, fontSize: { xs: "0.875rem", sm: "1rem" } }}>
                   {new Date(createdAt).toLocaleDateString('en-US', {
                     weekday: 'long',
                     month: 'long',
@@ -257,10 +258,14 @@ const ActivityDetail = () => {
                   backdropFilter: "blur(10px)",
                   color: "white",
                   fontWeight: 700,
-                  fontSize: "1.1rem",
-                  py: 3,
+                  fontSize: { xs: "0.875rem", sm: "1rem", md: "1.1rem" },
+                  py: { xs: 2, sm: 2.5, md: 3 },
                   px: 1,
                   border: "1px solid rgba(255, 255, 255, 0.2)",
+                  minWidth: { xs: "110px", sm: "120px", md: "140px" },
+                  "& .MuiChip-label": {
+                    px: { xs: 1.5, sm: 2, md: 2.5 },
+                  },
                 }}
               />
               <Chip
@@ -270,10 +275,14 @@ const ActivityDetail = () => {
                   backdropFilter: "blur(10px)",
                   color: "white",
                   fontWeight: 700,
-                  fontSize: "1.1rem",
-                  py: 3,
+                  fontSize: { xs: "0.875rem", sm: "1rem", md: "1.1rem" },
+                  py: { xs: 2, sm: 2.5, md: 3 },
                   px: 1,
                   border: "1px solid rgba(255, 255, 255, 0.2)",
+                  minWidth: { xs: "120px", sm: "130px", md: "150px" },
+                  "& .MuiChip-label": {
+                    px: { xs: 1.5, sm: 2, md: 2.5 },
+                  },
                 }}
               />
             </Box>
@@ -289,9 +298,9 @@ const ActivityDetail = () => {
             border: "1px solid rgba(255, 255, 255, 0.08)",
           }}
         >
-          <CardContent sx={{ p: 5 }}>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
-              <Typography variant="h2" sx={{ mr: 2, fontSize: "3rem" }}>
+          <CardContent sx={{ p: { xs: 3, sm: 4, md: 5 } }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: { xs: 2, sm: 3, md: 4 }, flexWrap: "wrap", gap: 1 }}>
+              <Typography variant="h2" sx={{ fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" } }}>
                 🤖
               </Typography>
               <Typography 
@@ -301,6 +310,7 @@ const ActivityDetail = () => {
                   fontWeight: 800,
                   textTransform: "uppercase",
                   letterSpacing: "1px",
+                  fontSize: { xs: "1.25rem", sm: "1.75rem", md: "2.125rem" },
                 }}
               >
                 AI-Powered Insights
