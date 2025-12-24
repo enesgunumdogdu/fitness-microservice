@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardContent, Container, Typography, Avatar } from "@mui/material";
+import { Box, Button, Card, CardContent, Container, Typography, Avatar, Link } from "@mui/material";
 import { useEffect } from "react";
 import Footer from "../components/Footer";
 
@@ -237,11 +237,33 @@ const LoginPage = ({ onLogin }) => {
               🔐 Sign In
             </Button>
 
+            <Box sx={{ mt: 3, textAlign: "center" }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "rgba(255, 255, 255, 0.6)" }}
+              >
+                Don&apos;t have an account?{" "}
+                <Link
+                  href="/register"
+                  sx={{
+                    color: "#667eea",
+                    fontWeight: 600,
+                    textDecoration: "none",
+                    "&:hover": {
+                      textDecoration: "underline",
+                    },
+                  }}
+                >
+                  Sign Up
+                </Link>
+              </Typography>
+            </Box>
+
             <Typography
               variant="caption"
               sx={{
                 display: "block",
-                mt: 4,
+                mt: 3,
                 color: "rgba(255, 255, 255, 0.4)",
                 fontWeight: 500,
               }}
