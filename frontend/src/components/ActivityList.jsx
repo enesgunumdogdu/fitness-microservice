@@ -136,7 +136,7 @@ const ActivityList = () => {
           const emoji = activityEmojis[activity.type] || '🏃';
           
           return (
-            <Grid item xs={12} sm={6} lg={4} key={activity.id}>
+            <Grid item xs={12} sm={6} lg={4} key={activity.id} sx={{ display: "flex" }}>
               <Card
                 elevation={0}
                 sx={{
@@ -147,6 +147,9 @@ const ActivityList = () => {
                   backdropFilter: "blur(20px)",
                   border: "1px solid rgba(255, 255, 255, 0.08)",
                   transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  display: "flex",
+                  flexDirection: "column",
+                  width: "100%",
                   "&:hover": {
                     transform: "translateY(-12px) scale(1.02)",
                     border: `1px solid ${colors.from}`,
@@ -176,10 +179,10 @@ const ActivityList = () => {
                   }}
                 >
                   <Box sx={{ display: "flex", alignItems: "center", mb: 2, position: "relative", zIndex: 1 }}>
-                    <Typography variant="h2" sx={{ mr: 1.5, fontSize: "2.5rem" }}>
+                    <Typography variant="h2" sx={{ mr: 1.5, fontSize: "2.5rem", flexShrink: 0 }}>
                       {emoji}
                     </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                    <Typography variant="h6" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {activity.type}
                     </Typography>
                   </Box>
@@ -194,6 +197,10 @@ const ActivityList = () => {
                         fontWeight: 700,
                         fontSize: "0.85rem",
                         border: "1px solid rgba(255, 255, 255, 0.2)",
+                        minWidth: "80px",
+                        "& .MuiChip-label": {
+                          px: 2,
+                        },
                       }}
                     />
                     <Chip
@@ -206,11 +213,15 @@ const ActivityList = () => {
                         fontWeight: 700,
                         fontSize: "0.85rem",
                         border: "1px solid rgba(255, 255, 255, 0.2)",
+                        minWidth: "95px",
+                        "& .MuiChip-label": {
+                          px: 2,
+                        },
                       }}
                     />
                   </Box>
                 </Box>
-                <CardContent sx={{ p: 2.5, background: "rgba(10, 10, 10, 0.4)" }}>
+                <CardContent sx={{ p: 2.5, background: "rgba(10, 10, 10, 0.4)", mt: "auto" }}>
                   <Typography variant="caption" sx={{ color: "rgba(255, 255, 255, 0.5)", fontWeight: 500 }}>
                     {new Date(activity.createdAt).toLocaleDateString('en-US', {
                       month: 'short',
