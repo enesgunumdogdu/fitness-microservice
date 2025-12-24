@@ -1,7 +1,6 @@
 package com.fitness.userservice.controller;
 
 import com.fitness.userservice.dto.RegisterRequest;
-import com.fitness.userservice.dto.RegistrationRequest;
 import com.fitness.userservice.dto.RegistrationResponse;
 import com.fitness.userservice.dto.UserResponse;
 import com.fitness.userservice.service.RegistrationService;
@@ -31,7 +30,7 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<RegistrationResponse> signup(@Valid @RequestBody RegistrationRequest request) {
+    public ResponseEntity<RegistrationResponse> signup(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(registrationService.registerUser(request));
     }
 

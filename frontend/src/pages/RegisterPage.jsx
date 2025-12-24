@@ -109,9 +109,22 @@ const RegisterPage = () => {
         navigate("/login");
       }, 2000);
     } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        "Registration failed. Please try again.";
+      const errorData = error.response?.data;
+      let message;
+
+      switch (errorData?.message) {
+        case "Email already exists":
+        case "Email already registered in identity provider":
+        case "User already exists in identity provider":
+          message = "This email is already registered. Please try logging in.";
+          break;
+        case "Registration service unavailable":
+          message = "Registration service is temporarily unavailable. Please try again later.";
+          break;
+        default:
+          message = errorData?.message || "Registration failed. Please try again.";
+      }
+
       setApiError(message);
     } finally {
       setLoading(false);
