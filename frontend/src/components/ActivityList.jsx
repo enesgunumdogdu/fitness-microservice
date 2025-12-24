@@ -1,4 +1,4 @@
-import { Card, CardContent, Grid, Typography, Box, Chip, CircularProgress, IconButton, Tooltip } from '@mui/material';
+import { Card, CardContent, Typography, Box, Chip, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { getActivities } from '../services/api';
@@ -130,38 +130,56 @@ const ActivityList = () => {
           </IconButton>
         </Tooltip>
       </Box>
-      <Grid container spacing={2}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            sm: "repeat(auto-fit, minmax(280px, 1fr))",
+          },
+          gap: 3,
+          justifyItems: "stretch",
+        }}
+      >
         {activities.map((activity) => {
           const colors = activityColors[activity.type] || activityColors.RUNNING;
           const emoji = activityEmojis[activity.type] || '🏃';
           
           return (
-            <Grid item xs={12} sm={6} lg={4} key={activity.id} sx={{ display: "flex" }}>
-              <Card
-                elevation={0}
-                sx={{
-                  cursor: 'pointer',
-                  borderRadius: 3,
-                  overflow: "hidden",
-                  background: "rgba(20, 20, 20, 0.6)",
-                  backdropFilter: "blur(20px)",
-                  border: "1px solid rgba(255, 255, 255, 0.08)",
-                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                  display: "flex",
-                  flexDirection: "column",
-                  width: "100%",
-                  "&:hover": {
-                    transform: "translateY(-12px) scale(1.02)",
-                    border: `1px solid ${colors.from}`,
-                    boxShadow: `0 20px 40px rgba(102, 126, 234, 0.3), 0 0 40px ${colors.from}33`,
-                  },
-                }}
-                onClick={() => navigate(`/activities/${activity.id}`)}
-              >
+            <Card
+              key={activity.id}
+              elevation={0}
+              sx={{
+                cursor: 'pointer',
+                borderRadius: 3,
+                overflow: "hidden",
+                background: "rgba(20, 20, 20, 0.6)",
+                backdropFilter: "blur(20px)",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                display: "flex",
+                flexDirection: "column",
+                width: "100%",
+                maxWidth: {
+                  xs: "500px",
+                  sm: "none",
+                },
+                mx: {
+                  xs: "auto",
+                  sm: 0,
+                },
+                "&:hover": {
+                  transform: "translateY(-12px) scale(1.02)",
+                  border: `1px solid ${colors.from}`,
+                  boxShadow: `0 20px 40px rgba(102, 126, 234, 0.3), 0 0 40px ${colors.from}33`,
+                },
+              }}
+              onClick={() => navigate(`/activities/${activity.id}`)}
+            >
                 <Box
                   sx={{
                     background: `linear-gradient(135deg, ${colors.from} 0%, ${colors.to} 100%)`,
-                    p: 3,
+                    p: { xs: 4, sm: 3 },
                     color: "white",
                     position: "relative",
                     overflow: "hidden",
@@ -170,34 +188,34 @@ const ActivityList = () => {
                       position: "absolute",
                       top: 0,
                       right: 0,
-                      width: "100px",
-                      height: "100px",
+                      width: { xs: "120px", sm: "100px" },
+                      height: { xs: "120px", sm: "100px" },
                       background: "rgba(255, 255, 255, 0.1)",
                       borderRadius: "50%",
                       transform: "translate(30%, -30%)",
                     },
                   }}
                 >
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 2, position: "relative", zIndex: 1 }}>
-                    <Typography variant="h2" sx={{ mr: 1.5, fontSize: "2.5rem", flexShrink: 0 }}>
+                  <Box                   sx={{ display: "flex", alignItems: "center", mb: 2, position: "relative", zIndex: 1 }}>
+                    <Typography variant="h2" sx={{ mr: 1.5, fontSize: { xs: "3rem", sm: "2.5rem" }, flexShrink: 0 }}>
                       {emoji}
                     </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <Typography variant="h6" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", fontSize: { xs: "1.1rem", sm: "1.25rem" }, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {activity.type}
                     </Typography>
                   </Box>
                   <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", position: "relative", zIndex: 1 }}>
                     <Chip
                       label={`${activity.duration} min`}
-                      size="small"
                       sx={{
                         background: "rgba(255, 255, 255, 0.25)",
                         backdropFilter: "blur(10px)",
                         color: "white",
                         fontWeight: 700,
-                        fontSize: "0.85rem",
+                        fontSize: { xs: "0.95rem", sm: "0.85rem" },
                         border: "1px solid rgba(255, 255, 255, 0.2)",
-                        minWidth: "80px",
+                        minWidth: { xs: "90px", sm: "80px" },
+                        height: { xs: "36px", sm: "32px" },
                         "& .MuiChip-label": {
                           px: 2,
                         },
@@ -205,15 +223,15 @@ const ActivityList = () => {
                     />
                     <Chip
                       label={`${activity.caloriesBurned} cal`}
-                      size="small"
                       sx={{
                         background: "rgba(255, 255, 255, 0.25)",
                         backdropFilter: "blur(10px)",
                         color: "white",
                         fontWeight: 700,
-                        fontSize: "0.85rem",
+                        fontSize: { xs: "0.95rem", sm: "0.85rem" },
                         border: "1px solid rgba(255, 255, 255, 0.2)",
-                        minWidth: "95px",
+                        minWidth: { xs: "105px", sm: "95px" },
+                        height: { xs: "36px", sm: "32px" },
                         "& .MuiChip-label": {
                           px: 2,
                         },
@@ -221,8 +239,8 @@ const ActivityList = () => {
                     />
                   </Box>
                 </Box>
-                <CardContent sx={{ p: 2.5, background: "rgba(10, 10, 10, 0.4)", mt: "auto" }}>
-                  <Typography variant="caption" sx={{ color: "rgba(255, 255, 255, 0.5)", fontWeight: 500 }}>
+                <CardContent sx={{ p: { xs: 3, sm: 2.5 }, background: "rgba(10, 10, 10, 0.4)", mt: "auto" }}>
+                  <Typography variant="caption" sx={{ color: "rgba(255, 255, 255, 0.5)", fontWeight: 500, fontSize: { xs: "0.85rem", sm: "0.75rem" } }}>
                     {new Date(activity.createdAt).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',
@@ -233,10 +251,9 @@ const ActivityList = () => {
                   </Typography>
                 </CardContent>
               </Card>
-            </Grid>
           );
         })}
-      </Grid>
+      </Box>
     </Box>
   );
 };
