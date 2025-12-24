@@ -1,6 +1,6 @@
 package com.fitness.userservice.service;
 
-import com.fitness.userservice.dto.RegistrationRequest;
+import com.fitness.userservice.dto.RegisterRequest;
 import com.fitness.userservice.dto.RegistrationResponse;
 import com.fitness.userservice.exception.RegistrationException;
 import com.fitness.userservice.model.User;
@@ -37,7 +37,7 @@ public class RegistrationService {
     private String defaultRole;
 
     @Transactional
-    public RegistrationResponse registerUser(RegistrationRequest request) {
+    public RegistrationResponse registerUser(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RegistrationException("Email already exists", "EMAIL_EXISTS");
         }
@@ -63,7 +63,7 @@ public class RegistrationService {
                 .build();
     }
 
-    private String createKeycloakUser(RegistrationRequest request) {
+    private String createKeycloakUser(RegisterRequest request) {
         try {
             RealmResource realmResource = keycloakAdminClient.realm(realm);
             UsersResource usersResource = realmResource.users();

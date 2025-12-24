@@ -12,11 +12,14 @@ public class RegisterRequest {
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must have at least of 6 characters")
+    @Size(min = 8, message = "Password must have at least 8 characters")
     private String password;
 
     private String keycloakId;
-    
+
+    @NotBlank(message = "First name is required")
     private String firstName;
+
+    @NotBlank(message = "Last name is required")
     private String lastName;
 }
