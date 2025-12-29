@@ -1,14 +1,88 @@
-name: Deploy to Hetzner
+name: CI/CD Pipeline - Deploy to Production
 
 on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+  # TEMPORARILY DISABLED - Enable after testing
+  # push:
+  #   branches: [prod]
+  workflow_dispatch:  # Manual trigger only for now
+
+env:
+  JAVA_VERSION: '21'
+  NODE_VERSION: '20'
 
 jobs:
-  deploy:
+  # ============================================
+  # Build & Test - Backend Services
+  # ============================================
+  build-backend:
+    name: Build & Test Backend
     runs-on: ubuntu-latest
-    
+
+    strategy:
+      matrix:
+        service:
+          - configserver
+          - eureka
+          - gateway
+          - userservice
+          - activityservice
+          - aiservice
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build and test ${{ matrix.service }}
+        working-directory: ${{ matrix.service }}
+        run: |
+          chmod +x mvnw
+          ./mvnw clean verify -B
+
+  # ============================================
+  # Build - Frontend
+  # ============================================
+  build-frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_KEYCLOAK_URL: ${{ secrets.VITE_KEYCLOAK_URL }}
+
+  # ============================================
+  # Deploy to Production
+  # ============================================
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build-backend, build-frontend]
+    if: success()
+
     steps:
       - name: Deploy to Production Server
         uses: appleboy/ssh-action@v1.0.0
@@ -17,9 +91,34 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            set -e
+
+            echo "========================================="
+            echo "Starting deployment at $(date)"
+            echo "========================================="
+
             cd ~/fitness-microservice
-            git pull origin main
-            docker-compose down
+
+            echo "Pulling latest changes from prod branch..."
+            git fetch origin prod
+            git checkout prod
+            git pull origin prod
+
+            echo "Stopping existing containers..."
+            docker-compose down --remove-orphans
+
+            echo "Building new images..."
             docker-compose build --no-cache
+
+            echo "Starting services..."
             docker-compose up -d
-            docker-compose logs --tail=50
+
+            echo "Waiting for services to be healthy..."
+            sleep 30
+
+            echo "Service status:"
+            docker-compose ps
+
+            echo "========================================="
+            echo "Deployment completed at $(date)"
+            echo "========================================="
