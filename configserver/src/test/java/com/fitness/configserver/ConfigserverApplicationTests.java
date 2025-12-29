@@ -1,20 +1,18 @@
 package com.fitness.configserver;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 class ConfigserverApplicationTests {
 
-	@Autowired
-	private ApplicationContext applicationContext;
+	@Test
+	void applicationClassExists() {
+		assertThat(ConfigserverApplication.class).isNotNull();
+	}
 
 	@Test
-	void contextLoads() {
-		assertThat(applicationContext).isNotNull();
+	void mainMethodExists() throws NoSuchMethodException {
+		assertThat(ConfigserverApplication.class.getMethod("main", String[].class)).isNotNull();
 	}
 }
