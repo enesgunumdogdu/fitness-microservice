@@ -205,10 +205,20 @@ jobs:
     steps:
       - name: Deploy to Production Server
         uses: appleboy/ssh-action@v1.0.0
+        env:
+          CHANGED_CONFIGSERVER: ${{ needs.changes.outputs.configserver }}
+          CHANGED_EUREKA: ${{ needs.changes.outputs.eureka }}
+          CHANGED_GATEWAY: ${{ needs.changes.outputs.gateway }}
+          CHANGED_USERSERVICE: ${{ needs.changes.outputs.userservice }}
+          CHANGED_ACTIVITYSERVICE: ${{ needs.changes.outputs.activityservice }}
+          CHANGED_AISERVICE: ${{ needs.changes.outputs.aiservice }}
+          CHANGED_FRONTEND: ${{ needs.changes.outputs.frontend }}
+          CHANGED_INFRASTRUCTURE: ${{ needs.changes.outputs.infrastructure }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: CHANGED_CONFIGSERVER,CHANGED_EUREKA,CHANGED_GATEWAY,CHANGED_USERSERVICE,CHANGED_ACTIVITYSERVICE,CHANGED_AISERVICE,CHANGED_FRONTEND,CHANGED_INFRASTRUCTURE
           script: |
             set -e
 
@@ -223,14 +233,58 @@ jobs:
             git checkout prod
             git pull origin prod
 
-            echo "Stopping existing containers..."
-            docker-compose down --remove-orphans
+            # Build list of changed services (using docker-compose service names)
+            SERVICES_TO_BUILD=""
 
-            echo "Building new images..."
-            docker-compose build --no-cache
+            if [ "$CHANGED_INFRASTRUCTURE" = "true" ]; then
+              echo "Infrastructure changed - rebuilding ALL services"
+              REBUILD_ALL=true
+            else
+              REBUILD_ALL=false
+              if [ "$CHANGED_CONFIGSERVER" = "true" ]; then
+                SERVICES_TO_BUILD="$SERVICES_TO_BUILD config-server"
+                echo "Will rebuild: config-server"
+              fi
+              if [ "$CHANGED_EUREKA" = "true" ]; then
+                SERVICES_TO_BUILD="$SERVICES_TO_BUILD eureka-server"
+                echo "Will rebuild: eureka-server"
+              fi
+              if [ "$CHANGED_GATEWAY" = "true" ]; then
+                SERVICES_TO_BUILD="$SERVICES_TO_BUILD gateway"
+                echo "Will rebuild: gateway"
+              fi
+              if [ "$CHANGED_USERSERVICE" = "true" ]; then
+                SERVICES_TO_BUILD="$SERVICES_TO_BUILD user-service"
+                echo "Will rebuild: user-service"
+              fi
+              if [ "$CHANGED_ACTIVITYSERVICE" = "true" ]; then
+                SERVICES_TO_BUILD="$SERVICES_TO_BUILD activity-service"
+                echo "Will rebuild: activity-service"
+              fi
+              if [ "$CHANGED_AISERVICE" = "true" ]; then
+                SERVICES_TO_BUILD="$SERVICES_TO_BUILD ai-service"
+                echo "Will rebuild: ai-service"
+              fi
+              if [ "$CHANGED_FRONTEND" = "true" ]; then
+                SERVICES_TO_BUILD="$SERVICES_TO_BUILD frontend"
+                echo "Will rebuild: frontend"
+              fi
+            fi
 
-            echo "Starting services..."
-            docker-compose up -d
+            if [ "$REBUILD_ALL" = "true" ]; then
+              echo "Rebuilding all services..."
+              docker-compose down --remove-orphans
+              docker-compose build --no-cache
+              docker-compose up -d
+            elif [ -n "$SERVICES_TO_BUILD" ]; then
+              echo "Building changed services:$SERVICES_TO_BUILD"
+              docker-compose build --no-cache $SERVICES_TO_BUILD
+              echo "Restarting changed services..."
+              docker-compose up -d --no-deps $SERVICES_TO_BUILD
+            else
+              echo "No services changed - ensuring all services are running"
+              docker-compose up -d
+            fi
 
             echo "Waiting for services to be healthy..."
             sleep 30
