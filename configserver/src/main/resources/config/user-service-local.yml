@@ -1,0 +1,26 @@
+# Local Development Configuration for User Service
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fitness_user_db
+    username: postgres
+    password: postgres123
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+keycloak:
+  auth-server-url: http://localhost:8181/auth
+  realm: fitness-oauth2
+  admin:
+    client-id: admin-cli
+    client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:your-client-secret}
+  default-role: ROLE_USER
