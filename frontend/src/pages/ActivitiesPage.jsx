@@ -1,14 +1,32 @@
 import { Box, Container, Typography, Button, AppBar, Toolbar, Avatar } from "@mui/material";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useCallback } from "react";
 import { AuthContext } from "react-oauth2-code-pkce";
+import { useDispatch } from "react-redux";
+import { logout as reduxLogout } from "../store/authSlice";
 import ActivityForm from "../components/ActivityForm";
 import ActivityList from "../components/ActivityList";
 import Footer from "../components/Footer";
 
 const ActivitiesPage = () => {
   const { logOut, tokenData } = useContext(AuthContext);
+  const dispatch = useDispatch();
   const username = tokenData?.preferred_username || tokenData?.name || "User";
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const handleLogout = useCallback(() => {
+    dispatch(reduxLogout());
+
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.startsWith('ROCP_') || key.startsWith('PKCE_'))) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+
+    logOut();
+  }, [dispatch, logOut]);
 
   useEffect(() => {
     document.title = "My Activities - AEG Fitness";
@@ -113,7 +131,7 @@ const ActivitiesPage = () => {
           </Typography>
           <Button
             variant="outlined"
-            onClick={logOut}
+            onClick={handleLogout}
             sx={{
               color: "white",
               borderColor: "rgba(102, 126, 234, 0.4)",
