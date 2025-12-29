@@ -47,8 +47,8 @@ jobs:
               - 'frontend/**'
             infrastructure:
               - 'docker-compose.yml'
+              - 'docker-compose.*.yml'
               - 'nginx/**'
-              - '.github/workflows/**'
 
   # ============================================
   # Build & Test - Backend Services
