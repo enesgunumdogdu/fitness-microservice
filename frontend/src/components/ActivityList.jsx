@@ -1,7 +1,7 @@
 import { Button, Card, CardContent, Typography, Box, Chip, CircularProgress, IconButton, Tooltip } from '@mui/material';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { AuthContext } from 'react-oauth2-code-pkce';
+import { useAuth } from '../auth/useAuth';
 import { getActivities } from '../services/api';
 
 const activityEmojis = {
@@ -17,12 +17,12 @@ const activityColors = {
 };
 
 const ActivityList = () => {
-  const { token, logIn } = useContext(AuthContext);
-  const isAuthenticated = Boolean(token);
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const goToLogin = () => navigate('/login');
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(isAuthenticated);
   const [sortNewestFirst, setSortNewestFirst] = useState(true);
-  const navigate = useNavigate();
 
   const fetchActivities = async () => {
     try {
@@ -84,7 +84,7 @@ const ActivityList = () => {
         </Typography>
         <Button
           variant="contained"
-          onClick={logIn}
+          onClick={goToLogin}
           sx={{
             px: 4,
             py: 1.5,

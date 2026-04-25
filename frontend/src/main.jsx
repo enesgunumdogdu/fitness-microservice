@@ -1,11 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { AuthProvider } from 'react-oauth2-code-pkce'
-import { authConfig } from './authConfig'
-import { Provider } from 'react-redux'
-import { store } from './store/store'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { CssBaseline } from '@mui/material'
+import { AuthProvider } from './auth/AuthContext'
 import './index.css'
 
 import App from './App'
@@ -78,13 +75,10 @@ const darkTheme = createTheme({
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
-  <AuthProvider authConfig={authConfig}
-                loadingComponent={<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#0a0a0a', color: '#fff', fontSize: '1.2rem'}}>Loading...</div>}>
-    <Provider store={store}>
-      <ThemeProvider theme={darkTheme}>
-        <CssBaseline />
-        <App />
-      </ThemeProvider>
-    </Provider>
-  </AuthProvider>,
+  <ThemeProvider theme={darkTheme}>
+    <CssBaseline />
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  </ThemeProvider>,
 )
