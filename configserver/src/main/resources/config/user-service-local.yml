@@ -1,10 +1,9 @@
-# Local Development Configuration for User Service
 server:
   port: 8081
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/fitness_user_db
+    url: jdbc:postgresql://localhost:5433/fitness_user_db
     username: postgres
     password: postgres123
   jpa:
@@ -17,10 +16,11 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
 
-keycloak:
-  auth-server-url: http://localhost:8181/auth
-  realm: fitness-oauth2
-  admin:
-    client-id: admin-cli
-    client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:your-client-secret}
-  default-role: ROLE_USER
+auth:
+  jwt:
+    issuer: http://localhost:8081
+    audience: fitness-platform
+    access-token-ttl: PT15M
+    refresh-token-ttl: P30D
+    keys-directory: auth-keys
+    key-id: auth-key-1

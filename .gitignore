@@ -19,3 +19,7 @@ backups/
 # IDE
 .idea/
 .vscode/
+
+# Auth service signing keys (dev profile)
+auth-keys/
+*/auth-keys/
