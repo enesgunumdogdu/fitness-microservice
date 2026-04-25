@@ -1,37 +1,25 @@
 import { Box, Container, Typography, Button, AppBar, Toolbar, Avatar } from "@mui/material";
-import { useContext, useState, useEffect, useCallback } from "react";
-import { AuthContext } from "react-oauth2-code-pkce";
-import { useDispatch } from "react-redux";
-import { logout as reduxLogout } from "../store/authSlice";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router";
+import { useAuth } from "../auth/useAuth";
 import ActivityForm from "../components/ActivityForm";
 import ActivityList from "../components/ActivityList";
 import Footer from "../components/Footer";
 
 const ActivitiesPage = () => {
-  const { token, logIn, logOut, tokenData } = useContext(AuthContext);
-  const dispatch = useDispatch();
-  const isAuthenticated = Boolean(token);
-  const firstName =
-    tokenData?.given_name ||
-    tokenData?.name?.split(" ")[0] ||
-    tokenData?.preferred_username ||
-    "User";
+  const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
+  const firstName = user?.firstName || user?.email?.split("@")[0] || "User";
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const handleLogout = useCallback(() => {
-    dispatch(reduxLogout());
+  const goToLogin = useCallback(() => {
+    navigate("/login");
+  }, [navigate]);
 
-    const keysToRemove = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && (key.startsWith('ROCP_') || key.startsWith('PKCE_'))) {
-        keysToRemove.push(key);
-      }
-    }
-    keysToRemove.forEach(key => localStorage.removeItem(key));
-
-    logOut();
-  }, [dispatch, logOut]);
+  const handleLogout = useCallback(async () => {
+    await logout();
+    navigate("/activities", { replace: true });
+  }, [logout, navigate]);
 
   useEffect(() => {
     document.title = "My Activities - AEG Fitness";
@@ -138,7 +126,7 @@ const ActivitiesPage = () => {
           )}
           <Button
             variant="outlined"
-            onClick={isAuthenticated ? handleLogout : logIn}
+            onClick={isAuthenticated ? handleLogout : goToLogin}
             sx={{
               color: "white",
               borderColor: "rgba(102, 126, 234, 0.4)",
