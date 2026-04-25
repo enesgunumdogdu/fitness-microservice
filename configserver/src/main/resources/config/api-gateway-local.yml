@@ -1,4 +1,3 @@
-# Local Development Configuration for API Gateway
 spring:
   application:
     name: api-gateway
@@ -6,10 +5,15 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8181/auth/realms/fitness-oauth2/protocol/openid-connect/certs
+          jwk-set-uri: http://localhost:8081/.well-known/jwks.json
   cloud:
     gateway:
       routes:
+        - id: auth-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/auth/**
+
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:

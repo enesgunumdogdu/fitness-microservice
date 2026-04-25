@@ -184,7 +184,6 @@ jobs:
         run: npm run build
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          VITE_KEYCLOAK_URL: ${{ secrets.VITE_KEYCLOAK_URL }}
 
   # ============================================
   # Deploy to Production
