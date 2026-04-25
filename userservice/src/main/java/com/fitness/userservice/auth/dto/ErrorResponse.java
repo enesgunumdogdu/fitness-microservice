@@ -1,4 +1,4 @@
-package com.fitness.userservice.dto;
+package com.fitness.userservice.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegistrationResponse {
-    private boolean success;
+public class ErrorResponse {
+    private String code;
     private String message;
-    private String userId;
-    private String email;
 }
-

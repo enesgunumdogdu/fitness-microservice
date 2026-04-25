@@ -1,7 +1,7 @@
 package com.fitness.userservice.exception;
 
-import com.fitness.userservice.dto.RegistrationResponse;
-import org.springframework.http.HttpStatus;
+import com.fitness.userservice.auth.dto.ErrorResponse;
+import com.fitness.userservice.auth.exception.AuthException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,35 +13,27 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(RegistrationException.class)
-    public ResponseEntity<RegistrationResponse> handleRegistrationException(RegistrationException ex) {
-        HttpStatus status = switch (ex.getErrorCode()) {
-            case "EMAIL_EXISTS" -> HttpStatus.CONFLICT;
-            case "USERNAME_EXISTS" -> HttpStatus.CONFLICT;
-            case "KEYCLOAK_ERROR" -> HttpStatus.SERVICE_UNAVAILABLE;
-            default -> HttpStatus.BAD_REQUEST;
-        };
-
-        return ResponseEntity.status(status).body(
-                RegistrationResponse.builder()
-                        .success(false)
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<ErrorResponse> handleAuthException(AuthException ex) {
+        return ResponseEntity.status(ex.getStatus()).body(
+                ErrorResponse.builder()
+                        .code(ex.getCode())
                         .message(ex.getMessage())
                         .build()
         );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<RegistrationResponse> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
         String errors = ex.getBindingResult().getFieldErrors().stream()
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(", "));
 
         return ResponseEntity.badRequest().body(
-                RegistrationResponse.builder()
-                        .success(false)
+                ErrorResponse.builder()
+                        .code("VALIDATION_ERROR")
                         .message(errors)
                         .build()
         );
     }
 }
-

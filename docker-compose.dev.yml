@@ -1,22 +1,6 @@
-# =============================================================================
-# Local Development Environment
-# =============================================================================
-# Bu dosya sadece altyapi servislerini calistirir.
-# Mikroservisleri IDE'den calistirin (hot-reload icin).
-#
-# Kullanim:
-#   docker-compose -f docker-compose.dev.yml up -d
-#
-# Servisleri durdurmak icin:
-#   docker-compose -f docker-compose.dev.yml down
-# =============================================================================
-
 version: '3.8'
 
 services:
-  # ---------------------------------------------------------------------------
-  # PostgreSQL - User Service & Keycloak
-  # ---------------------------------------------------------------------------
   postgres:
     image: postgres:16-alpine
     container_name: fitness-postgres-dev
@@ -26,9 +10,8 @@ services:
       POSTGRES_PASSWORD: postgres123
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     ports:
-      - "5432:5432"
+      - "5433:5432"
     networks:
       - fitness-dev-network
     healthcheck:
@@ -37,9 +20,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # ---------------------------------------------------------------------------
-  # MongoDB - Activity Service & AI Service
-  # ---------------------------------------------------------------------------
   mongodb:
     image: mongo:7-jammy
     container_name: fitness-mongodb-dev
@@ -57,9 +37,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # ---------------------------------------------------------------------------
-  # RabbitMQ - Message Broker
-  # ---------------------------------------------------------------------------
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: fitness-rabbitmq-dev
@@ -69,8 +46,8 @@ services:
     volumes:
       - rabbitmq_dev_data:/var/lib/rabbitmq
     ports:
-      - "5672:5672"      # AMQP
-      - "15672:15672"    # Management UI
+      - "5672:5672"
+      - "15672:15672"
     networks:
       - fitness-dev-network
     healthcheck:
@@ -78,38 +55,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  # ---------------------------------------------------------------------------
-  # Keycloak - Identity Provider
-  # ---------------------------------------------------------------------------
-  keycloak:
-    image: quay.io/keycloak/keycloak:23.0
-    container_name: fitness-keycloak-dev
-    environment:
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
-      KC_DB_USERNAME: postgres
-      KC_DB_PASSWORD: postgres123
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin123
-      KC_HOSTNAME_STRICT: "false"
-      KC_HTTP_ENABLED: "true"
-      KC_PROXY: edge
-      KC_HTTP_RELATIVE_PATH: /auth
-    command: start-dev
-    depends_on:
-      postgres:
-        condition: service_healthy
-    ports:
-      - "8181:8080"
-    networks:
-      - fitness-dev-network
-    healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080 || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
 
 networks:
   fitness-dev-network:
