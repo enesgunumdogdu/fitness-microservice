@@ -10,7 +10,6 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - fitness-network
     healthcheck:
@@ -51,35 +50,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
-
-  keycloak:
-    image: quay.io/keycloak/keycloak:23.0
-    container_name: fitness-keycloak
-    environment:
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
-      KC_DB_USERNAME: postgres
-      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      KC_HOSTNAME: ${DOMAIN}
-      KC_HOSTNAME_STRICT: "false"
-      KC_HTTP_ENABLED: "true"
-      KC_PROXY: edge
-      KC_HTTP_RELATIVE_PATH: /auth
-    command: start
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - fitness-network
-    healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080 || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
     restart: unless-stopped
 
   config-server:
@@ -132,16 +102,18 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
       SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
-      KEYCLOAK_AUTH_SERVER_URL: http://keycloak:8080/auth
-      KEYCLOAK_REALM: fitness-oauth2
-      KEYCLOAK_ADMIN_CLIENT_ID: ${KEYCLOAK_ADMIN_CLIENT_ID}
-      KEYCLOAK_ADMIN_CLIENT_SECRET: ${KEYCLOAK_ADMIN_CLIENT_SECRET}
+      AUTH_JWT_ISSUER: ${AUTH_JWT_ISSUER}
+      AUTH_JWT_AUDIENCE: ${AUTH_JWT_AUDIENCE}
+      AUTH_JWT_ACCESS_TTL: ${AUTH_JWT_ACCESS_TTL}
+      AUTH_JWT_REFRESH_TTL: ${AUTH_JWT_REFRESH_TTL}
+      AUTH_JWT_KEYS_DIR: ${AUTH_JWT_KEYS_DIR}
+      AUTH_JWT_KEY_ID: ${AUTH_JWT_KEY_ID}
+    volumes:
+      - auth_keys:/var/lib/auth-keys
     depends_on:
       postgres:
         condition: service_healthy
       eureka-server:
-        condition: service_healthy
-      keycloak:
         condition: service_healthy
     networks:
       - fitness-network
@@ -200,12 +172,10 @@ services:
       context: ./gateway
     container_name: fitness-gateway
     environment:
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/auth/realms/fitness-oauth2/protocol/openid-connect/certs
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://user-service:8081/.well-known/jwks.json
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
       SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
     depends_on:
-      keycloak:
-        condition: service_healthy
       eureka-server:
         condition: service_healthy
       user-service:
@@ -223,7 +193,6 @@ services:
       context: ./frontend
       args:
         VITE_API_URL: https://${DOMAIN}/api
-        VITE_KEYCLOAK_URL: https://${DOMAIN}/auth
     container_name: fitness-frontend
     depends_on:
       - gateway
@@ -245,7 +214,6 @@ services:
     depends_on:
       - frontend
       - gateway
-      - keycloak
     networks:
       - fitness-network
     restart: unless-stopped
@@ -258,5 +226,6 @@ volumes:
   postgres_data:
   mongodb_data:
   rabbitmq_data:
+  auth_keys:
   certbot-etc:
   certbot-var:
