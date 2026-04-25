@@ -1,10 +1,13 @@
 import { Box, Button, Card, CardContent, FormControl, InputLabel, MenuItem, Select, TextField, Typography, Alert } from '@mui/material';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { AuthContext } from 'react-oauth2-code-pkce';
 import { addActivity } from '../services/api';
 
 const ActivityForm = ({ onActivityAdded }) => {
   const userId = useSelector(state => state.auth.userId);
+  const { token, logIn } = useContext(AuthContext);
+  const isAuthenticated = Boolean(token);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -20,6 +23,11 @@ const ActivityForm = ({ onActivityAdded }) => {
     e.preventDefault();
     setError('');
     setSuccess(false);
+
+    if (!isAuthenticated) {
+      setError('Please sign in to log activities');
+      return;
+    }
 
     if (!activity.duration || !activity.caloriesBurned) {
       setError('Please fill in all fields');
@@ -84,6 +92,20 @@ const ActivityForm = ({ onActivityAdded }) => {
           Log New Activity
         </Typography>
 
+        {!isAuthenticated && (
+          <Alert
+            severity="info"
+            action={
+              <Button color="inherit" size="small" onClick={logIn} sx={{ fontWeight: 700 }}>
+                Sign In
+              </Button>
+            }
+            sx={{ mb: 2 }}
+          >
+            Sign in required to log activities
+          </Alert>
+        )}
+
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
@@ -97,7 +119,7 @@ const ActivityForm = ({ onActivityAdded }) => {
         )}
 
         <Box component="form" onSubmit={handleSubmit}>
-          <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormControl fullWidth sx={{ mb: 2 }} disabled={!isAuthenticated}>
             <InputLabel>Activity Type</InputLabel>
             <Select
               value={activity.type}
@@ -118,6 +140,7 @@ const ActivityForm = ({ onActivityAdded }) => {
             value={activity.duration}
             onChange={(e) => setActivity({ ...activity, duration: e.target.value })}
             required
+            disabled={!isAuthenticated}
             inputProps={{ min: 1 }}
           />
 
@@ -129,6 +152,7 @@ const ActivityForm = ({ onActivityAdded }) => {
             value={activity.caloriesBurned}
             onChange={(e) => setActivity({ ...activity, caloriesBurned: e.target.value })}
             required
+            disabled={!isAuthenticated}
             inputProps={{ min: 1 }}
           />
 
@@ -136,7 +160,7 @@ const ActivityForm = ({ onActivityAdded }) => {
             type="submit"
             variant="contained"
             fullWidth
-            disabled={loading}
+            disabled={loading || !isAuthenticated}
             sx={{
               py: 2,
               fontSize: "1rem",
@@ -176,7 +200,7 @@ const ActivityForm = ({ onActivityAdded }) => {
               },
             }}
           >
-            {loading ? "Adding..." : "Add Activity"}
+            {loading ? "Adding..." : isAuthenticated ? "Add Activity" : "Sign in to Add"}
           </Button>
         </Box>
       </CardContent>
