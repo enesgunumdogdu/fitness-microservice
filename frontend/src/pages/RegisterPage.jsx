@@ -23,10 +23,22 @@ import {
   Lock,
 } from "@mui/icons-material";
 import Footer from "../components/Footer";
-import { registerUser } from "../services/api";
+import { useAuth } from "../auth/useAuth";
+
+const mapRegisterError = (error) => {
+  const code = error?.response?.data?.code;
+  const message = error?.response?.data?.message;
+
+  if (code === "EMAIL_EXISTS") return "This email is already registered. Please try logging in.";
+  if (code === "VALIDATION_ERROR") return message || "Please check your input.";
+  if (!error?.response) return "Cannot reach the server. Please check your connection.";
+
+  return message || "Registration failed. Please try again.";
+};
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -39,7 +51,6 @@ const RegisterPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
-  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     document.title = "Register - AEG Fitness";
@@ -97,35 +108,15 @@ const RegisterPage = () => {
     setApiError("");
 
     try {
-      await registerUser({
+      await register({
         email: formData.email,
         password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
       });
-
-      setSuccess(true);
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+      navigate("/activities", { replace: true });
     } catch (error) {
-      const errorData = error.response?.data;
-      let message;
-
-      switch (errorData?.message) {
-        case "Email already exists":
-        case "Email already registered in identity provider":
-        case "User already exists in identity provider":
-          message = "This email is already registered. Please try logging in.";
-          break;
-        case "Registration service unavailable":
-          message = "Registration service is temporarily unavailable. Please try again later.";
-          break;
-        default:
-          message = errorData?.message || "Registration failed. Please try again.";
-      }
-
-      setApiError(message);
+      setApiError(mapRegisterError(error));
     } finally {
       setLoading(false);
     }
@@ -304,19 +295,7 @@ const RegisterPage = () => {
           </Box>
 
           <CardContent sx={{ p: 4 }}>
-            {success ? (
-              <Alert
-                severity="success"
-                sx={{
-                  mb: 2,
-                  backgroundColor: "rgba(46, 125, 50, 0.1)",
-                  border: "1px solid rgba(46, 125, 50, 0.3)",
-                }}
-              >
-                Registration successful! Redirecting to login...
-              </Alert>
-            ) : (
-              <Box component="form" onSubmit={handleSubmit} noValidate>
+            <Box component="form" onSubmit={handleSubmit} noValidate>
                 {apiError && (
                   <Alert
                     severity="error"
@@ -541,7 +520,6 @@ const RegisterPage = () => {
                   </Typography>
                 </Box>
               </Box>
-            )}
           </CardContent>
         </Card>
       </Container>

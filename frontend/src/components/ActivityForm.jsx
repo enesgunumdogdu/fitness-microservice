@@ -1,13 +1,14 @@
 import { Box, Button, Card, CardContent, FormControl, InputLabel, MenuItem, Select, TextField, Typography, Alert } from '@mui/material';
-import { useContext, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { AuthContext } from 'react-oauth2-code-pkce';
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
+import { useAuth } from '../auth/useAuth';
 import { addActivity } from '../services/api';
 
 const ActivityForm = ({ onActivityAdded }) => {
-  const userId = useSelector(state => state.auth.userId);
-  const { token, logIn } = useContext(AuthContext);
-  const isAuthenticated = Boolean(token);
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
+  const userId = user?.id;
+  const goToLogin = () => navigate('/login');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -96,7 +97,7 @@ const ActivityForm = ({ onActivityAdded }) => {
           <Alert
             severity="info"
             action={
-              <Button color="inherit" size="small" onClick={logIn} sx={{ fontWeight: 700 }}>
+              <Button color="inherit" size="small" onClick={goToLogin} sx={{ fontWeight: 700 }}>
                 Sign In
               </Button>
             }
