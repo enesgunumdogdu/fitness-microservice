@@ -8,9 +8,14 @@ import ActivityList from "../components/ActivityList";
 import Footer from "../components/Footer";
 
 const ActivitiesPage = () => {
-  const { logOut, tokenData } = useContext(AuthContext);
+  const { token, logIn, logOut, tokenData } = useContext(AuthContext);
   const dispatch = useDispatch();
-  const username = tokenData?.preferred_username || tokenData?.name || "User";
+  const isAuthenticated = Boolean(token);
+  const firstName =
+    tokenData?.given_name ||
+    tokenData?.name?.split(" ")[0] ||
+    tokenData?.preferred_username ||
+    "User";
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const handleLogout = useCallback(() => {
@@ -118,20 +123,22 @@ const ActivitiesPage = () => {
           >
             AEG FITNESS
           </Typography>
-          <Typography
-            variant="body2"
-            sx={{ 
-              mr: 3, 
-              color: "rgba(255, 255, 255, 0.7)",
-              fontWeight: 500,
-              display: { xs: "none", sm: "block" },
-            }}
-          >
-            Welcome, {username}
-          </Typography>
+          {isAuthenticated && (
+            <Typography
+              variant="body2"
+              sx={{
+                mr: 3,
+                color: "rgba(255, 255, 255, 0.7)",
+                fontWeight: 500,
+                display: { xs: "none", sm: "block" },
+              }}
+            >
+              Welcome, {firstName}
+            </Typography>
+          )}
           <Button
             variant="outlined"
-            onClick={handleLogout}
+            onClick={isAuthenticated ? handleLogout : logIn}
             sx={{
               color: "white",
               borderColor: "rgba(102, 126, 234, 0.4)",
@@ -148,7 +155,7 @@ const ActivitiesPage = () => {
               },
             }}
           >
-            Logout
+            {isAuthenticated ? "Logout" : "Sign In"}
           </Button>
         </Toolbar>
       </AppBar>

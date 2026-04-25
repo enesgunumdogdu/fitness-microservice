@@ -1,6 +1,7 @@
-import { Card, CardContent, Typography, Box, Chip, CircularProgress, IconButton, Tooltip } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { Button, Card, CardContent, Typography, Box, Chip, CircularProgress, IconButton, Tooltip } from '@mui/material';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { AuthContext } from 'react-oauth2-code-pkce';
 import { getActivities } from '../services/api';
 
 const activityEmojis = {
@@ -16,8 +17,10 @@ const activityColors = {
 };
 
 const ActivityList = () => {
+  const { token, logIn } = useContext(AuthContext);
+  const isAuthenticated = Boolean(token);
   const [activities, setActivities] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(isAuthenticated);
   const [sortNewestFirst, setSortNewestFirst] = useState(true);
   const navigate = useNavigate();
 
@@ -48,8 +51,61 @@ const ActivityList = () => {
   };
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setActivities([]);
+      setLoading(false);
+      return;
+    }
     fetchActivities();
-  }, []);
+  }, [isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return (
+      <Card
+        elevation={0}
+        sx={{
+          borderRadius: 3,
+          background: "rgba(20, 20, 20, 0.6)",
+          backdropFilter: "blur(20px)",
+          border: "1px solid rgba(255, 255, 255, 0.08)",
+          textAlign: "center",
+          py: 10,
+          px: 3,
+        }}
+      >
+        <Typography variant="h2" sx={{ mb: 3, fontSize: "4rem" }}>
+          🔒
+        </Typography>
+        <Typography variant="h5" sx={{ mb: 2, color: "#ffffff", fontWeight: 700 }}>
+          Sign in to view your activities
+        </Typography>
+        <Typography variant="body1" sx={{ color: "rgba(255, 255, 255, 0.5)", mb: 4 }}>
+          Create an account or sign in to track activities and get AI-powered recommendations
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={logIn}
+          sx={{
+            px: 4,
+            py: 1.5,
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "1px",
+            borderRadius: 2,
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            boxShadow: "0 8px 24px rgba(102, 126, 234, 0.4)",
+            "&:hover": {
+              background: "linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%)",
+              boxShadow: "0 12px 40px rgba(102, 126, 234, 0.6)",
+              transform: "translateY(-2px)",
+            },
+          }}
+        >
+          Sign In
+        </Button>
+      </Card>
+    );
+  }
 
   if (loading) {
     return (
