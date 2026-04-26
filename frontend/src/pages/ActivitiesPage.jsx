@@ -1,196 +1,62 @@
-import { Box, Container, Typography, Button, AppBar, Toolbar, Avatar } from "@mui/material";
-import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router";
-import { useAuth } from "../auth/useAuth";
+import { Box, Typography } from "@mui/material";
+import { useCallback, useState } from "react";
+import AppShell from "../components/AppShell";
 import ActivityForm from "../components/ActivityForm";
 import ActivityList from "../components/ActivityList";
-import Footer from "../components/Footer";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const ActivitiesPage = () => {
-  const navigate = useNavigate();
-  const { isAuthenticated, user, logout } = useAuth();
-  const firstName = user?.firstName || user?.email?.split("@")[0] || "User";
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const goToLogin = useCallback(() => {
-    navigate("/login");
-  }, [navigate]);
+  usePageTitle("Activities - AEG Fitness");
 
-  const handleLogout = useCallback(async () => {
-    await logout();
-    navigate("/activities", { replace: true });
-  }, [logout, navigate]);
-
-  useEffect(() => {
-    document.title = "My Activities - AEG Fitness";
+  const handleActivityAdded = useCallback(() => {
+    setRefreshTrigger((value) => value + 1);
   }, []);
 
-  const handleActivityAdded = () => {
-    setRefreshTrigger(prev => prev + 1);
-  };
-
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        background: "#0a0a0a",
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <Box
-        sx={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      >
-        <Box
+    <AppShell>
+      <Box sx={{ mb: 5 }}>
+        <Typography
+          variant="overline"
+          sx={{ color: "#9aa9ff", fontWeight: 700, letterSpacing: "2px" }}
+        >
+          Activities
+        </Typography>
+        <Typography
+          variant="h3"
           sx={{
-            position: "absolute",
-            top: "-20%",
-            right: "-10%",
-            width: "50%",
-            height: "50%",
-            borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%)",
-            filter: "blur(80px)",
-          }}
-        />
-        <Box
-          sx={{
-            position: "absolute",
-            bottom: "-20%",
-            left: "-10%",
-            width: "50%",
-            height: "50%",
-            borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(118, 75, 162, 0.1) 0%, transparent 70%)",
-            filter: "blur(80px)",
-          }}
-        />
-      </Box>
-      <AppBar
-        position="sticky"
-        elevation={0}
-        sx={{
-          background: "rgba(20, 20, 20, 0.8)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
-          zIndex: 1000,
-        }}
-      >
-        <Toolbar sx={{ py: 0.5 }}>
-          <Avatar
-            sx={{
-              mr: 2,
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              fontSize: 24,
-              width: 45,
-              height: 45,
-              boxShadow: "0 4px 20px rgba(102, 126, 234, 0.3)",
-            }}
-          >
-            💪
-          </Avatar>
-          <Typography
-            variant="h6"
-            component="div"
-            className="gradient-text"
-            sx={{ 
-              flexGrow: 1, 
-              fontWeight: 800,
-              textTransform: "uppercase",
-              letterSpacing: "1px",
-            }}
-          >
-            AEG FITNESS
-          </Typography>
-          {isAuthenticated && (
-            <Typography
-              variant="body2"
-              sx={{
-                mr: 3,
-                color: "rgba(255, 255, 255, 0.7)",
-                fontWeight: 500,
-                display: { xs: "none", sm: "block" },
-              }}
-            >
-              Welcome, {firstName}
-            </Typography>
-          )}
-          <Button
-            variant="outlined"
-            onClick={isAuthenticated ? handleLogout : goToLogin}
-            sx={{
-              color: "white",
-              borderColor: "rgba(102, 126, 234, 0.4)",
-              textTransform: "uppercase",
-              fontWeight: 600,
-              letterSpacing: "0.5px",
-              borderRadius: 2,
-              px: 3,
-              transition: "all 0.3s ease",
-              "&:hover": {
-                borderColor: "#667eea",
-                background: "rgba(102, 126, 234, 0.1)",
-                boxShadow: "0 4px 20px rgba(102, 126, 234, 0.3)",
-              },
-            }}
-          >
-            {isAuthenticated ? "Logout" : "Sign In"}
-          </Button>
-        </Toolbar>
-      </AppBar>
-
-      <Container maxWidth="lg" sx={{ mt: 6, mb: 4, flex: 1, position: "relative", zIndex: 1 }}>
-        <Box sx={{ mb: 5, textAlign: "center" }}>
-          <Typography
-            variant="h3"
-            className="gradient-text"
-            sx={{
-              fontWeight: 900,
-              mb: 2,
-              textTransform: "uppercase",
-              letterSpacing: "2px",
-            }}
-          >
-            Track Your Fitness Journey
-          </Typography>
-          <Typography
-            variant="h6"
-            sx={{
-              color: "rgba(255, 255, 255, 0.6)",
-              fontWeight: 400,
-              letterSpacing: "0.5px",
-            }}
-          >
-            Log your activities and get personalized AI recommendations
-          </Typography>
-        </Box>
-
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr", md: "400px 1fr" },
-            gap: 3,
+            fontWeight: 800,
+            mt: 1,
+            mb: 1,
+            letterSpacing: "-0.5px",
           }}
         >
-          <Box>
-            <ActivityForm onActivityAdded={handleActivityAdded} />
+          Track your{" "}
+          <Box component="span" className="gradient-text">
+            fitness journey
           </Box>
-          <Box>
-            <ActivityList key={refreshTrigger} />
-          </Box>
+        </Typography>
+        <Typography sx={{ color: "rgba(255,255,255,0.6)" }}>
+          Log a session and let your AI coach analyse it within seconds.
+        </Typography>
+      </Box>
+
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", md: "400px 1fr" },
+          gap: 3,
+        }}
+      >
+        <Box>
+          <ActivityForm onActivityAdded={handleActivityAdded} />
         </Box>
-      </Container>
-      <Footer />
-    </Box>
+        <Box>
+          <ActivityList key={refreshTrigger} />
+        </Box>
+      </Box>
+    </AppShell>
   );
 };
 

@@ -2,6 +2,8 @@ package com.fitness.activityservice.service;
 
 import com.fitness.activityservice.dto.ActivityRequest;
 import com.fitness.activityservice.dto.ActivityResponse;
+import com.fitness.activityservice.exception.ActivityNotFoundException;
+import com.fitness.activityservice.exception.ForbiddenException;
 import com.fitness.activityservice.model.Activity;
 import com.fitness.activityservice.repository.ActivityRepository;
 import lombok.RequiredArgsConstructor;
@@ -44,10 +46,9 @@ public class ActivityService {
 
         Activity savedActivity = activityRepository.save(activity);
 
-        //Publish to RabbitMQ for AI processing
-        try{
+        try {
             rabbitTemplate.convertAndSend(exchange, routingKey, savedActivity);
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error("Faield to publish activity to RabbitMQ: ", e);
         }
         return mapToResponse(savedActivity);
@@ -74,9 +75,12 @@ public class ActivityService {
                 .collect(Collectors.toList());
     }
 
-    public ActivityResponse getActivityById(String activityId) {
-        return activityRepository.findById(activityId)
-                .map(this::mapToResponse)
-                .orElseThrow(()->new RuntimeException("Activity not found with id: " + activityId));
+    public ActivityResponse getActivityById(String activityId, String callerUserId) {
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new ActivityNotFoundException("Activity not found with id: " + activityId));
+        if (!activity.getUserId().equals(callerUserId)) {
+            throw new ForbiddenException("Access denied");
+        }
+        return mapToResponse(activity);
     }
 }

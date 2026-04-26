@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useState } from "react";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router";
 import {
   Alert,
   Avatar,
@@ -21,7 +21,9 @@ import {
   Visibility,
   VisibilityOff,
 } from "@mui/icons-material";
+import BackgroundOrbs from "../components/BackgroundOrbs";
 import Footer from "../components/Footer";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useAuth } from "../auth/useAuth";
 
 const inputStyles = {
@@ -49,6 +51,7 @@ const mapLoginError = (error) => {
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
@@ -56,9 +59,7 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
 
-  useEffect(() => {
-    document.title = "Login - AEG Fitness";
-  }, []);
+  usePageTitle("Login - AEG Fitness");
 
   const validate = () => {
     const next = {};
@@ -86,7 +87,8 @@ const LoginPage = () => {
 
     try {
       await login({ email: formData.email, password: formData.password });
-      navigate("/activities", { replace: true });
+      const redirectTo = location.state?.from?.pathname || "/dashboard";
+      navigate(redirectTo, { replace: true });
     } catch (error) {
       setApiError(mapLoginError(error));
     } finally {
@@ -105,45 +107,7 @@ const LoginPage = () => {
         overflow: "hidden",
       }}
     >
-      <Box
-        sx={{
-          position: "absolute",
-          top: "-10%",
-          right: "-5%",
-          width: "50%",
-          height: "50%",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%)",
-          filter: "blur(80px)",
-          animation: "float 6s ease-in-out infinite",
-        }}
-      />
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: "-10%",
-          left: "-5%",
-          width: "45%",
-          height: "45%",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(118, 75, 162, 0.15) 0%, transparent 70%)",
-          filter: "blur(80px)",
-          animation: "float 8s ease-in-out infinite",
-        }}
-      />
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "60%",
-          height: "60%",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(0, 212, 255, 0.08) 0%, transparent 70%)",
-          filter: "blur(100px)",
-        }}
-      />
+      <BackgroundOrbs variant="auth" />
 
       <Container
         maxWidth="sm"
@@ -361,7 +325,8 @@ const LoginPage = () => {
                 <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.6)" }}>
                   Don&apos;t have an account?{" "}
                   <Link
-                    href="/register"
+                    component={RouterLink}
+                    to="/register"
                     sx={{
                       color: "#667eea",
                       fontWeight: 600,
