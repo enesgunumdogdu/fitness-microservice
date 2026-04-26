@@ -48,3 +48,5 @@ export const getActivities = () => api.get("/activities");
 export const addActivity = (activity) => api.post("/activities", activity);
 export const getActivity = (id) => api.get(`/activities/${id}`);
 export const getActivityRecommendation = (id) => api.get(`/recommendations/activity/${id}`);
+export const getUserRecommendations = (userId) => api.get(`/recommendations/user/${userId}`);
+export const getUserProfile = (userId) => api.get(`/users/${userId}`);
