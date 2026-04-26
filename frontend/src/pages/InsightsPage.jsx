@@ -17,22 +17,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../auth/useAuth";
 import AppShell from "../components/AppShell";
+import { usePageTitle } from "../hooks/usePageTitle";
+import { getActivityMeta } from "../lib/activityMeta";
+import { formatShortDate } from "../lib/dates";
 import { getUserRecommendations } from "../services/api";
-
-const ACTIVITY_META = {
-  RUNNING: { emoji: "🏃", from: "#FF6B6B", to: "#FF8E53" },
-  WALKING: { emoji: "🚶", from: "#4ECDC4", to: "#44A08D" },
-  CYCLING: { emoji: "🚴", from: "#A8E6CF", to: "#3DDC84" },
-};
-
-const formatDate = (isoString) => {
-  if (!isoString) return "—";
-  return new Date(isoString).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-};
 
 const ListSection = ({ title, color, items }) => {
   if (!items?.length) return null;
@@ -75,9 +63,7 @@ const InsightsPage = () => {
   const [error, setError] = useState("");
   const [filter, setFilter] = useState("ALL");
 
-  useEffect(() => {
-    document.title = "AI Insights - AEG Fitness";
-  }, []);
+  usePageTitle("AI Insights - AEG Fitness");
 
   useEffect(() => {
     let cancelled = false;
@@ -224,7 +210,7 @@ const InsightsPage = () => {
 
           <Stack spacing={3}>
             {filtered.map((rec) => {
-              const meta = ACTIVITY_META[rec.activityType] || ACTIVITY_META.RUNNING;
+              const meta = getActivityMeta(rec.activityType);
               return (
                 <Card
                   key={rec.id}
@@ -262,7 +248,7 @@ const InsightsPage = () => {
                           {rec.activityType || "Activity"}
                         </Typography>
                         <Typography variant="caption" sx={{ opacity: 0.85 }}>
-                          {formatDate(rec.createdAt)}
+                          {formatShortDate(rec.createdAt)}
                         </Typography>
                       </Box>
                     </Stack>

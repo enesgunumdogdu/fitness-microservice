@@ -19,19 +19,12 @@ import {
   UpdateOutlined,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
 import { useAuth } from "../auth/useAuth";
+import { useLogoutFlow } from "../auth/useLogoutFlow";
 import AppShell from "../components/AppShell";
+import { usePageTitle } from "../hooks/usePageTitle";
+import { formatLongDate } from "../lib/dates";
 import { getUserProfile } from "../services/api";
-
-const formatLong = (isoString) => {
-  if (!isoString) return "—";
-  return new Date(isoString).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-};
 
 const InfoRow = ({ icon: Icon, label, value }) => (
   <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2, py: 2 }}>
@@ -70,31 +63,28 @@ const InfoRow = ({ icon: Icon, label, value }) => (
 );
 
 const ProfilePage = () => {
-  const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const handleLogout = useLogoutFlow();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    document.title = "Profile - AEG Fitness";
-  }, []);
+  usePageTitle("Profile - AEG Fitness");
 
   useEffect(() => {
+    const userId = user?.id;
+    if (!userId) return undefined;
     let cancelled = false;
     const load = async () => {
-      if (!user?.id) return;
       setLoading(true);
       setError("");
       try {
-        const { data } = await getUserProfile(user.id);
+        const { data } = await getUserProfile(userId);
         if (!cancelled) setProfile(data);
       } catch (err) {
-        if (!cancelled) {
-          setError("Could not load your profile. Showing cached data.");
-          setProfile(user);
-          console.error(err);
-        }
+        if (cancelled) return;
+        setError("Could not load your profile. Showing cached data.");
+        console.error(err);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -103,12 +93,7 @@ const ProfilePage = () => {
     return () => {
       cancelled = true;
     };
-  }, [user]);
-
-  const handleLogout = async () => {
-    await logout();
-    navigate("/", { replace: true });
-  };
+  }, [user?.id]);
 
   const data = profile || user;
   const initials = data
@@ -193,12 +178,12 @@ const ProfilePage = () => {
               <InfoRow
                 icon={CalendarMonth}
                 label="Member since"
-                value={formatLong(data?.createdAt)}
+                value={formatLongDate(data?.createdAt)}
               />
               <InfoRow
                 icon={UpdateOutlined}
                 label="Last updated"
-                value={formatLong(data?.updatedAt)}
+                value={formatLongDate(data?.updatedAt)}
               />
               <InfoRow
                 icon={ShieldOutlined}

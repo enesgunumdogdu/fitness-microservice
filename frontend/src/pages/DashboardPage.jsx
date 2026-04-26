@@ -2,6 +2,7 @@ import {
   Alert,
   Box,
   Button,
+  ButtonBase,
   Card,
   CardContent,
   Chip,
@@ -19,30 +20,13 @@ import {
   TrendingUp,
 } from "@mui/icons-material";
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router";
+import { Link as RouterLink, useNavigate } from "react-router";
 import { useAuth } from "../auth/useAuth";
 import AppShell from "../components/AppShell";
+import { usePageTitle } from "../hooks/usePageTitle";
+import { getActivityMeta } from "../lib/activityMeta";
+import { formatRelative, formatShortDate } from "../lib/dates";
 import { getActivities, getUserRecommendations } from "../services/api";
-
-const ACTIVITY_META = {
-  RUNNING: { emoji: "🏃", from: "#FF6B6B", to: "#FF8E53" },
-  WALKING: { emoji: "🚶", from: "#4ECDC4", to: "#44A08D" },
-  CYCLING: { emoji: "🚴", from: "#A8E6CF", to: "#3DDC84" },
-};
-
-const formatRelative = (isoString) => {
-  if (!isoString) return "—";
-  const date = new Date(isoString);
-  const diffMs = Date.now() - date.getTime();
-  const minutes = Math.floor(diffMs / 60000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-};
 
 const StatCard = ({ icon: Icon, label, value, accent }) => (
   <Card
@@ -94,9 +78,7 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    document.title = "Dashboard - AEG Fitness";
-  }, []);
+  usePageTitle("Dashboard - AEG Fitness");
 
   useEffect(() => {
     let cancelled = false;
@@ -268,11 +250,14 @@ const DashboardPage = () => {
                 ) : (
                   <Stack spacing={2}>
                     {recentActivities.map((activity) => {
-                      const meta = ACTIVITY_META[activity.type] || ACTIVITY_META.RUNNING;
+                      const meta = getActivityMeta(activity.type);
+                      const ariaLabel = `${activity.type} on ${formatShortDate(activity.createdAt)} — ${activity.duration} minutes, ${activity.caloriesBurned} calories`;
                       return (
-                        <Box
+                        <ButtonBase
                           key={activity.id}
-                          onClick={() => navigate(`/activities/${activity.id}`)}
+                          component={RouterLink}
+                          to={`/activities/${activity.id}`}
+                          aria-label={ariaLabel}
                           sx={{
                             p: 2.5,
                             borderRadius: 2,
@@ -282,12 +267,19 @@ const DashboardPage = () => {
                             gridTemplateColumns: "auto 1fr auto",
                             alignItems: "center",
                             gap: 2,
-                            cursor: "pointer",
+                            textAlign: "left",
+                            width: "100%",
+                            color: "inherit",
+                            textDecoration: "none",
                             transition: "all 0.2s ease",
                             "&:hover": {
                               borderColor: `${meta.from}66`,
                               background: `linear-gradient(135deg, ${meta.from}10 0%, ${meta.to}10 100%)`,
                               transform: "translateX(4px)",
+                            },
+                            "&:focus-visible": {
+                              outline: "2px solid #667eea",
+                              outlineOffset: 2,
                             },
                           }}
                         >
@@ -334,7 +326,7 @@ const DashboardPage = () => {
                               }}
                             />
                           </Stack>
-                        </Box>
+                        </ButtonBase>
                       );
                     })}
                   </Stack>
