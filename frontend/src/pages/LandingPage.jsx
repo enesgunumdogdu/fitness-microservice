@@ -92,27 +92,12 @@ const LandingPage = () => {
 
   const secondaryCta = isAuthenticated
     ? { label: "Log an activity", to: "/activities" }
-    : { label: "Browse activities", to: "/activities" };
+    : { label: "Sign in", to: "/login" };
 
   return (
     <AppShell maxWidth={false} disableContainer>
       <Container maxWidth="lg" sx={{ pt: { xs: 8, md: 12 }, pb: { xs: 10, md: 14 } }}>
         <Box sx={{ textAlign: "center", maxWidth: 880, mx: "auto" }}>
-          <Chip
-            label="AI-powered fitness tracker"
-            icon={<AutoAwesome sx={{ fontSize: 16 }} />}
-            sx={{
-              mb: 4,
-              px: 1.5,
-              py: 2.2,
-              fontWeight: 600,
-              letterSpacing: "0.5px",
-              background: "rgba(102,126,234,0.12)",
-              border: "1px solid rgba(102,126,234,0.3)",
-              color: "#cdd5ff",
-              "& .MuiChip-icon": { color: "#9aa9ff" },
-            }}
-          />
           <Typography
             variant="h1"
             sx={{

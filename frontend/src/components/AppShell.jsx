@@ -19,7 +19,7 @@ import Footer from "./Footer";
 
 const PRIMARY_LINKS = [
   { to: "/dashboard", label: "Dashboard", authOnly: true },
-  { to: "/activities", label: "Activities", authOnly: false },
+  { to: "/activities", label: "Activities", authOnly: true },
   { to: "/insights", label: "Insights", authOnly: true },
   { to: "/profile", label: "Profile", authOnly: true },
 ];

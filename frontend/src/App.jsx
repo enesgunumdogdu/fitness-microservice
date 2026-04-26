@@ -36,8 +36,22 @@ const AppContent = () => (
         </AnonymousOnly>
       }
     />
-    <Route path="/activities" element={<ActivitiesPage />} />
-    <Route path="/activities/:id" element={<ActivityDetail />} />
+    <Route
+      path="/activities"
+      element={
+        <PrivateRoute>
+          <ActivitiesPage />
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/activities/:id"
+      element={
+        <PrivateRoute>
+          <ActivityDetail />
+        </PrivateRoute>
+      }
+    />
     <Route
       path="/dashboard"
       element={
