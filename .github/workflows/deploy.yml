@@ -227,10 +227,10 @@ jobs:
 
             cd ~/fitness-microservice
 
-            echo "Pulling latest changes from prod branch..."
+            echo "Syncing prod to origin/prod (handles force-pushed history)..."
             git fetch origin prod
             git checkout prod
-            git pull origin prod
+            git reset --hard origin/prod
 
             # Build list of changed services (using docker-compose service names)
             SERVICES_TO_BUILD=""
