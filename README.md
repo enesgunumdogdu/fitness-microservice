@@ -2,6 +2,8 @@
 
 Cloud-native, microservices-based fitness tracking platform with **AI-powered workout recommendations** and a **self-hosted JWT authentication service**.
 
+Public portfolio project demonstrating Spring Cloud microservices, event-driven design, and a modern React client. Suitable for local development and study; production deployments require hardening beyond the defaults in this repo.
+
 ---
 
 ## 📋 Overview
@@ -31,7 +33,7 @@ The system follows cloud-native principles such as service discovery, centralize
 ### Frontend
 - **React 19** + **Vite 7.2** – Modern build tool
 - **Material-UI 7.3** – UI components
-- **Custom AuthContext** – `localStorage`-backed session, single-flight refresh, Axios interceptor for `Bearer` + 401-refresh-retry
+- **Custom AuthContext** – `localStorage`-backed session, single-flight refresh, Axios `Bearer` interceptor with 401 → refresh → retry
 - **Axios** – HTTP client
 - **React Router 7.10** – Client-side routing
 
@@ -166,7 +168,7 @@ The User Service uses **Flyway** for schema management:
 
 - **Eureka Dashboard:** http://localhost:8761
 - **RabbitMQ Management UI:** http://localhost:15672
-- **JWKS endpoint:** http://localhost:8080/.well-known/jwks.json
+- **JWKS endpoint (User Service):** http://localhost:8081/.well-known/jwks.json (the API Gateway validates JWTs against this URI; see `configserver/.../api-gateway*.yml`)
 
 ---
 
@@ -184,4 +186,4 @@ The User Service uses **Flyway** for schema management:
 
 ## 📄 License
 
-MIT License
+[MIT License](LICENSE)
