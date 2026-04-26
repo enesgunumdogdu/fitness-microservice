@@ -1,5 +1,8 @@
 # Fitness Microservice
 
+[![CI/CD](https://github.com/enesgunumdogdu/fitness-microservice/actions/workflows/deploy.yml/badge.svg?branch=prod)](https://github.com/enesgunumdogdu/fitness-microservice/actions/workflows/deploy.yml?query=branch%3Aprod+event%3Apush)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 Cloud-native, microservices-based fitness tracking platform with **AI-powered workout recommendations** and a **self-hosted JWT authentication service**.
 
 Public portfolio project demonstrating Spring Cloud microservices, event-driven design, and a modern React client. Suitable for local development and study; production deployments require hardening beyond the defaults in this repo.
