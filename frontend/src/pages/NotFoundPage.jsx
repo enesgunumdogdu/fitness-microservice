@@ -2,14 +2,20 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import { ArrowBack, Home } from "@mui/icons-material";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
+import { useAuth } from "../auth/useAuth";
 import AppShell from "../components/AppShell";
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     document.title = "Not Found - AEG Fitness";
   }, []);
+
+  const secondary = isAuthenticated
+    ? { label: "Go to dashboard", to: "/dashboard" }
+    : { label: "Sign in", to: "/login" };
 
   return (
     <AppShell maxWidth="md">
@@ -29,8 +35,7 @@ const NotFoundPage = () => {
           We couldn&apos;t find that page.
         </Typography>
         <Typography sx={{ color: "rgba(255,255,255,0.6)", maxWidth: 460, mx: "auto", mb: 5 }}>
-          The link may be broken or the page may have moved. Head back home or jump straight into
-          the activity log.
+          The link may be broken or the page may have moved.
         </Typography>
         <Stack direction={{ xs: "column", sm: "row" }} spacing={2} justifyContent="center">
           <Button
@@ -52,7 +57,7 @@ const NotFoundPage = () => {
           <Button
             variant="outlined"
             startIcon={<ArrowBack />}
-            onClick={() => navigate("/activities")}
+            onClick={() => navigate(secondary.to)}
             sx={{
               fontWeight: 700,
               textTransform: "uppercase",
@@ -65,7 +70,7 @@ const NotFoundPage = () => {
               },
             }}
           >
-            Browse activities
+            {secondary.label}
           </Button>
         </Stack>
       </Box>
