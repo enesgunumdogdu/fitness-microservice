@@ -15,6 +15,8 @@ import { Logout, Menu as MenuIcon } from "@mui/icons-material";
 import { useCallback, useState } from "react";
 import { Link as RouterLink, NavLink, useLocation, useNavigate } from "react-router";
 import { useAuth } from "../auth/useAuth";
+import { useLogoutFlow } from "../auth/useLogoutFlow";
+import BackgroundOrbs from "./BackgroundOrbs";
 import Footer from "./Footer";
 
 const PRIMARY_LINKS = [
@@ -42,56 +44,16 @@ const navLinkSx = ({ isActive }) => ({
   },
 });
 
-const BackgroundOrbs = () => (
-  <Box
-    sx={{
-      position: "fixed",
-      inset: 0,
-      pointerEvents: "none",
-      zIndex: 0,
-    }}
-  >
-    <Box
-      sx={{
-        position: "absolute",
-        top: "-20%",
-        right: "-10%",
-        width: "50%",
-        height: "50%",
-        borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(102,126,234,0.1) 0%, transparent 70%)",
-        filter: "blur(80px)",
-      }}
-    />
-    <Box
-      sx={{
-        position: "absolute",
-        bottom: "-20%",
-        left: "-10%",
-        width: "50%",
-        height: "50%",
-        borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(118,75,162,0.1) 0%, transparent 70%)",
-        filter: "blur(80px)",
-      }}
-    />
-  </Box>
-);
-
 const AppShell = ({ children, maxWidth = "lg", disableContainer = false }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const firstName = user?.firstName || user?.email?.split("@")[0] || "User";
   const [mobileAnchor, setMobileAnchor] = useState(null);
+  const handleLogout = useLogoutFlow();
 
   const goToLogin = useCallback(() => navigate("/login"), [navigate]);
   const goToRegister = useCallback(() => navigate("/register"), [navigate]);
-
-  const handleLogout = useCallback(async () => {
-    await logout();
-    navigate("/", { replace: true });
-  }, [logout, navigate]);
 
   const visibleLinks = PRIMARY_LINKS.filter((link) => !link.authOnly || isAuthenticated);
 

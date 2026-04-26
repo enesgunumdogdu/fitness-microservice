@@ -10,10 +10,10 @@ import {
   LockOutlined,
   TrendingUp,
 } from "@mui/icons-material";
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
+import { Link as RouterLink } from "react-router";
 import { useAuth } from "../auth/useAuth";
 import AppShell from "../components/AppShell";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const FEATURES = [
   {
@@ -79,12 +79,9 @@ const ACTIVITY_PILLS = [
 ];
 
 const LandingPage = () => {
-  const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
-  useEffect(() => {
-    document.title = "AEG Fitness - Track smarter. Train better.";
-  }, []);
+  usePageTitle("AEG Fitness - Track smarter. Train better.");
 
   const primaryCta = isAuthenticated
     ? { label: "Open dashboard", to: "/dashboard" }
@@ -139,7 +136,8 @@ const LandingPage = () => {
               variant="contained"
               size="large"
               endIcon={<ArrowForward />}
-              onClick={() => navigate(primaryCta.to)}
+              component={RouterLink}
+              to={primaryCta.to}
               sx={{
                 px: 4,
                 py: 1.8,
@@ -163,7 +161,8 @@ const LandingPage = () => {
             <Button
               variant="outlined"
               size="large"
-              onClick={() => navigate(secondaryCta.to)}
+              component={RouterLink}
+              to={secondaryCta.to}
               sx={{
                 px: 4,
                 py: 1.8,
@@ -515,7 +514,8 @@ const LandingPage = () => {
               variant="contained"
               size="large"
               endIcon={<ArrowForward />}
-              onClick={() => navigate(primaryCta.to)}
+              component={RouterLink}
+              to={primaryCta.to}
               sx={{
                 px: 5,
                 py: 2,

@@ -1,15 +1,14 @@
 import { Box, Typography } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import AppShell from "../components/AppShell";
 import ActivityForm from "../components/ActivityForm";
 import ActivityList from "../components/ActivityList";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const ActivitiesPage = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  useEffect(() => {
-    document.title = "Activities - AEG Fitness";
-  }, []);
+  usePageTitle("Activities - AEG Fitness");
 
   const handleActivityAdded = useCallback(() => {
     setRefreshTrigger((value) => value + 1);

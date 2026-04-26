@@ -1,17 +1,14 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { ArrowBack, Home } from "@mui/icons-material";
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
+import { Link as RouterLink } from "react-router";
 import { useAuth } from "../auth/useAuth";
 import AppShell from "../components/AppShell";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const NotFoundPage = () => {
-  const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
-  useEffect(() => {
-    document.title = "Not Found - AEG Fitness";
-  }, []);
+  usePageTitle("Not Found - AEG Fitness");
 
   const secondary = isAuthenticated
     ? { label: "Go to dashboard", to: "/dashboard" }
@@ -41,7 +38,8 @@ const NotFoundPage = () => {
           <Button
             variant="contained"
             startIcon={<Home />}
-            onClick={() => navigate("/")}
+            component={RouterLink}
+            to="/"
             sx={{
               fontWeight: 700,
               textTransform: "uppercase",
@@ -57,7 +55,8 @@ const NotFoundPage = () => {
           <Button
             variant="outlined"
             startIcon={<ArrowBack />}
-            onClick={() => navigate(secondary.to)}
+            component={RouterLink}
+            to={secondary.to}
             sx={{
               fontWeight: 700,
               textTransform: "uppercase",

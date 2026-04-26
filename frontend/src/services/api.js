@@ -1,6 +1,6 @@
 import axios from "axios";
 import { refreshTokens } from "../auth/authService";
-import { clearSession, getAccessToken, getSession } from "../auth/sessionStore";
+import { clearSession, getAccessToken } from "../auth/sessionStore";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
@@ -8,11 +8,7 @@ const api = axios.create({ baseURL: API_URL });
 
 api.interceptors.request.use((config) => {
   const token = getAccessToken();
-  const userId = getSession()?.user?.id;
-
   if (token) config.headers["Authorization"] = `Bearer ${token}`;
-  if (userId) config.headers["X-User-ID"] = userId;
-
   return config;
 });
 

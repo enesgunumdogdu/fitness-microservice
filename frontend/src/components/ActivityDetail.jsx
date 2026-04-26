@@ -13,18 +13,15 @@ import {
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import AppShell from "./AppShell";
+import { getActivityMeta } from "../lib/activityMeta";
+import { formatActivityDateTime } from "../lib/dates";
 import { getActivity, getActivityRecommendation } from "../services/api";
 
-const activityEmojis = {
-  RUNNING: "🏃",
-  WALKING: "🚶",
-  CYCLING: "🚴",
-};
+const POLL_INTERVAL_MS = 5000;
+const POLL_MAX_ATTEMPTS = 60;
 
-const activityColors = {
-  RUNNING: { from: "#FF6B6B", to: "#FF8E53" },
-  WALKING: { from: "#4ECDC4", to: "#44A08D" },
-  CYCLING: { from: "#A8E6CF", to: "#3DDC84" },
+const debugLog = (message, error) => {
+  if (import.meta.env.DEV) console.debug(message, error?.message);
 };
 
 const ListSection = ({ title, color, items }) => {
@@ -85,7 +82,7 @@ const ActivityDetail = () => {
           const recommendationResponse = await getActivityRecommendation(id);
           recommendationData = recommendationResponse.data;
         } catch (recError) {
-          console.log("Recommendation not ready yet:", recError);
+          debugLog("Recommendation not ready yet:", recError);
         }
 
         const combinedData = {
@@ -113,19 +110,25 @@ const ActivityDetail = () => {
   useEffect(() => {
     if (!activity || activity.recommendation) return undefined;
 
+    let attempts = 0;
     const interval = setInterval(async () => {
+      attempts += 1;
+      if (attempts > POLL_MAX_ATTEMPTS) {
+        clearInterval(interval);
+        return;
+      }
       try {
         const recommendationResponse = await getActivityRecommendation(id);
-        if (recommendationResponse.data?.recommendation) {
-          setActivity((prev) => ({
-            ...prev,
-            ...recommendationResponse.data,
-          }));
-        }
+        if (!recommendationResponse.data?.recommendation) return;
+        clearInterval(interval);
+        setActivity((prev) => ({
+          ...prev,
+          ...recommendationResponse.data,
+        }));
       } catch (error) {
-        console.log("Recommendation still not ready", error);
+        debugLog("Recommendation still not ready", error);
       }
-    }, 5000);
+    }, POLL_INTERVAL_MS);
 
     return () => clearInterval(interval);
   }, [activity, id]);
@@ -159,8 +162,7 @@ const ActivityDetail = () => {
   const duration = activity.duration || 0;
   const calories = activity.caloriesBurned || 0;
   const createdAt = activity.createdAt || new Date().toISOString();
-  const colors = activityColors[activityType] || activityColors.RUNNING;
-  const emoji = activityEmojis[activityType] || "🏃";
+  const meta = getActivityMeta(activityType);
 
   return (
     <AppShell maxWidth="md">
@@ -198,7 +200,7 @@ const ActivityDetail = () => {
       >
         <Box
           sx={{
-            background: `linear-gradient(135deg, ${colors.from} 0%, ${colors.to} 100%)`,
+            background: `linear-gradient(135deg, ${meta.from} 0%, ${meta.to} 100%)`,
             p: { xs: 3, sm: 4, md: 5 },
             color: "white",
             position: "relative",
@@ -229,7 +231,7 @@ const ActivityDetail = () => {
             }}
           >
             <Typography variant="h1" sx={{ fontSize: { xs: "3rem", sm: "4rem", md: "5rem" } }}>
-              {emoji}
+              {meta.emoji}
             </Typography>
             <Box sx={{ flex: "1 1 auto", minWidth: { xs: "100%", sm: "auto" }, maxWidth: "100%" }}>
               <Typography
@@ -248,14 +250,7 @@ const ActivityDetail = () => {
                 {activityType}
               </Typography>
               <Typography variant="body1" sx={{ opacity: 0.9, fontWeight: 500, fontSize: { xs: "0.875rem", sm: "1rem" } }}>
-                {new Date(createdAt).toLocaleDateString("en-US", {
-                  weekday: "long",
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+                {formatActivityDateTime(createdAt)}
               </Typography>
             </Box>
           </Box>
