@@ -3,18 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../auth/useAuth';
 import { getActivities } from '../services/api';
-
-const activityEmojis = {
-  RUNNING: '🏃',
-  WALKING: '🚶',
-  CYCLING: '🚴',
-};
-
-const activityColors = {
-  RUNNING: { from: '#FF6B6B', to: '#FF8E53' },
-  WALKING: { from: '#4ECDC4', to: '#44A08D' },
-  CYCLING: { from: '#A8E6CF', to: '#3DDC84' },
-};
+import { getActivityMeta } from '../lib/activityMeta';
 
 const ActivityList = () => {
   const { isAuthenticated } = useAuth();
@@ -198,9 +187,10 @@ const ActivityList = () => {
         }}
       >
         {activities.map((activity) => {
-          const colors = activityColors[activity.type] || activityColors.RUNNING;
-          const emoji = activityEmojis[activity.type] || '🏃';
-          
+          const meta = getActivityMeta(activity.type);
+          const colors = { from: meta.from, to: meta.to };
+          const emoji = meta.emoji;
+
           return (
             <Card
               key={activity.id}

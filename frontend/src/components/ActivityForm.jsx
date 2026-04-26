@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../auth/useAuth';
 import { addActivity } from '../services/api';
+import { ACTIVITY_META, ACTIVITY_TYPES } from '../lib/activityMeta';
 
 const ActivityForm = ({ onActivityAdded }) => {
   const navigate = useNavigate();
@@ -127,9 +128,11 @@ const ActivityForm = ({ onActivityAdded }) => {
               label="Activity Type"
               onChange={(e) => setActivity({ ...activity, type: e.target.value })}
             >
-              <MenuItem value="RUNNING">🏃 Running</MenuItem>
-              <MenuItem value="WALKING">🚶 Walking</MenuItem>
-              <MenuItem value="CYCLING">🚴 Cycling</MenuItem>
+              {ACTIVITY_TYPES.map((type) => (
+                <MenuItem key={type} value={type}>
+                  {ACTIVITY_META[type].emoji} {ACTIVITY_META[type].label}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
 
