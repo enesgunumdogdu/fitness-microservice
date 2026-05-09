@@ -102,12 +102,12 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
       SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
-      AUTH_JWT_ISSUER: ${AUTH_JWT_ISSUER}
-      AUTH_JWT_AUDIENCE: ${AUTH_JWT_AUDIENCE}
-      AUTH_JWT_ACCESS_TTL: ${AUTH_JWT_ACCESS_TTL}
-      AUTH_JWT_REFRESH_TTL: ${AUTH_JWT_REFRESH_TTL}
-      AUTH_JWT_KEYS_DIR: ${AUTH_JWT_KEYS_DIR}
-      AUTH_JWT_KEY_ID: ${AUTH_JWT_KEY_ID}
+      AUTH_JWT_ISSUER: ${AUTH_JWT_ISSUER:-https://aeg.fitness}
+      AUTH_JWT_AUDIENCE: ${AUTH_JWT_AUDIENCE:-fitness-platform}
+      AUTH_JWT_ACCESS_TTL: ${AUTH_JWT_ACCESS_TTL:-PT15M}
+      AUTH_JWT_REFRESH_TTL: ${AUTH_JWT_REFRESH_TTL:-P30D}
+      AUTH_JWT_KEYS_DIR: ${AUTH_JWT_KEYS_DIR:-/var/lib/auth-keys}
+      AUTH_JWT_KEY_ID: ${AUTH_JWT_KEY_ID:-auth-key-1}
     volumes:
       - auth_keys:/var/lib/auth-keys
     depends_on:
